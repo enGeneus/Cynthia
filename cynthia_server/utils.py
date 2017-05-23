@@ -12,14 +12,13 @@ def get_context(path):
 
 
 def get_params_dictionary(path):
-    url_elements = path.split("?")
-    url_elements.pop(0)
+    if "?" in path:
+        path = path.split("?", 1)[1]
     params = dict()
-    if url_elements:
-        for current_param in url_elements[0].split("&"):
-            if "=" in current_param:
-                name, value = current_param.split("=", 1)
-                params[name] = value
+    for current_param in path.split("&"):
+        if "=" in current_param:
+            name, value = current_param.split("=", 1)
+            params[name] = value
     return params
 
 
@@ -27,6 +26,9 @@ def fill_template(file_path, content_dictionary):
     f = open(curdir + sep + config.HTML_BASEDIR + file_path)
     file = f.read()
     template = Template(file)
-    output = template.safe_substitute(content_dictionary)
+    if content_dictionary:
+        output = template.safe_substitute(content_dictionary)
+    else:
+        output = file
     f.close()
     return output

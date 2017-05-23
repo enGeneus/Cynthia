@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 
-from cynthia_server import cynthia_pages
+from cynthia_server import pages
 
 # Server configuration
 HOST = 'localhost'
@@ -10,9 +10,9 @@ HTML_BASEDIR = "/html_files/"
 
 # Context / page class mapping
 pages_mapping = dict()
-pages_mapping['/'] = cynthia_pages.WelcomePage
-pages_mapping['/cynthia'] = cynthia_pages.WelcomePage
+pages_mapping['/'] = pages.WelcomePage
+pages_mapping['/cynthia'] = pages.WelcomePage
 
 # Page / html path mapping
 html_mapping = dict()
-html_mapping[cynthia_pages.WelcomePage] = "cynthia.html"
+html_mapping[pages.WelcomePage] = "cynthia.html"
