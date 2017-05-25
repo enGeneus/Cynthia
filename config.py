@@ -3,10 +3,15 @@
 from cynthia_server import pages
 
 # Server configuration
-HOST = 'localhost'
-PORT = 8080
-
+CYNTHIA_HOST = 'localhost'
+CYNTHIA_PORT = 8080
 HTML_BASEDIR = "/html_files/"
+
+# Database configuration
+EXTERNAL_DB_HOST = ''
+EXTERNAL_DB_PORT = 0
+EXTERNAL_DB_USER = ''
+EXTERNAL_DB_PASS = ''
 
 # Context / page class mapping
 pages_mapping = dict()
