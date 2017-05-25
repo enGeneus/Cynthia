@@ -1,6 +1,7 @@
 # !/usr/bin/env python
 
 from cynthia_server import utils
+import config
 import abc
 import datetime
 
@@ -20,7 +21,12 @@ class BasePage:
         return
 
     def render(self):
-        return utils.fill_template(self.template_file, self.build_content_dictionary())
+        contents = self.build_content_dictionary()
+        if 'error' in contents:
+            template_file = config.error_page
+        else:
+            template_file = self.template_file
+        return utils.fill_template(template_file, contents)
 
 
 class WelcomePage(BasePage):
@@ -28,4 +34,5 @@ class WelcomePage(BasePage):
     def build_content_dictionary(self):
         param = dict()
         param['page_content'] = "Last login at " + str(datetime.datetime.now())
+        param['error'] = 404
         return param

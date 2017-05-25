@@ -16,3 +16,6 @@ pages_mapping['/cynthia'] = pages.WelcomePage
 # Page / html path mapping
 html_mapping = dict()
 html_mapping[pages.WelcomePage] = "cynthia.html"
+
+# Error page html
+error_page = "error.html"
