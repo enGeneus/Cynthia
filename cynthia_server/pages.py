@@ -34,5 +34,4 @@ class WelcomePage(BasePage):
     def build_content_dictionary(self):
         param = dict()
         param['page_content'] = "Last login at " + str(datetime.datetime.now())
-        param['error'] = 404
         return param
