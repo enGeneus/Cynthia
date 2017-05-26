@@ -10,4 +10,11 @@ def query_db(query):
     session = driver.session()
     result = session.run(query)
     session.close()
+    return result
+
+
+def get_node_labels():
+    query = "MATCH (n) RETURN distinct labels(n) as label"
+    result = query_db(query)
     print(result)
+    return "OK"

@@ -17,10 +17,14 @@ EXTERNAL_DB_PASS = ''
 pages_mapping = dict()
 pages_mapping['/'] = pages.WelcomePage
 pages_mapping['/cynthia'] = pages.WelcomePage
+pages_mapping['/query'] = pages.QueryBuildPage
+pages_mapping['/results'] = pages.ResultPage
 
 # Page / html path mapping
 html_mapping = dict()
 html_mapping[pages.WelcomePage] = "cynthia.html"
+html_mapping[pages.QueryBuildPage] = "query.html"
+html_mapping[pages.ResultPage] = "results.html"
 
 # Error page html
 error_page = "error.html"

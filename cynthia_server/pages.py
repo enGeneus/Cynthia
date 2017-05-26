@@ -4,6 +4,7 @@ from cynthia_server import utils
 import config
 import abc
 import datetime
+import logic
 
 
 class BasePage:
@@ -32,6 +33,20 @@ class BasePage:
 class WelcomePage(BasePage):
 
     def build_content_dictionary(self):
-        param = dict()
-        param['page_content'] = "Last login at " + str(datetime.datetime.now())
-        return param
+        content = dict()
+        content['page_content'] = "Last login at " + str(datetime.datetime.now())
+        return content
+
+
+class QueryBuildPage(BasePage):
+
+    def build_content_dictionary(self):
+        return dict()
+
+
+class ResultPage(BasePage):
+
+    def build_content_dictionary(self):
+        content = dict()
+        content['result'] = logic.get_node_labels()
+        return content
