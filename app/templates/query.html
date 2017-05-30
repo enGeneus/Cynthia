@@ -25,9 +25,20 @@
         <![endif]-->
     </head>
     <body>
-        <h1>RESULTS PAGE</h1>
-        <p>It is expected to be the visualization of query results here...</p>
-        <p>$result</p>
+        <h1>Query page</h1>
+        <p>It is expected to be a form here...</p>
+
+        <section>
+            <form action="/results" method="post">
+                <div class="form-group">
+                    <label for="request">Request something:</label>
+                    <input type="text" class="form-control" id="request" name="request"/>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default">Get node labels</button>
+                </div>
+            </form>
+        </section>
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
