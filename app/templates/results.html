@@ -26,7 +26,15 @@
     </head>
     <body>
         <h1>RESULTS PAGE</h1>
-        <p>You entered the following string: {{requested_string}}</p>
+        {% if not results %}
+            <p>No results</p>
+        {% else %}
+            <ul>
+                {% for result in results %}
+                    <li>{{result}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>

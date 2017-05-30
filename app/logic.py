@@ -16,5 +16,11 @@ def query_db(query):
 def get_node_labels():
     query = "MATCH (n) RETURN distinct labels(n) as label"
     result = query_db(query)
-    print(result)
-    return "OK"
+    label_list = []
+    for record in result:
+        label_list.append(record["label"][0])
+    return label_list
+
+
+def build_and_query(form_data):
+    return get_node_labels()
