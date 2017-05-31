@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 
-from flask import render_template, send_from_directory, request
+from flask import render_template, send_from_directory, request, jsonify
 from app import app
 from app import logic
 
@@ -13,13 +13,13 @@ def send_asset(path):
 @app.route('/')
 @app.route('/index')
 def index_page():
-    return render_template("cynthia.html",
-                           title='Home')
+    return render_template("cynthia.html")
 
 
 @app.route('/build_query')
 def query_page():
-    return render_template("query.html")
+    node_labels = logic.get_node_labels()
+    return render_template("build_query.html", node_labels=node_labels)
 
 
 @app.route('/results', methods=['POST'])
@@ -32,3 +32,9 @@ def query_handler():
 @app.route('/error')
 def error_page():
     return render_template("error.html")
+
+
+@app.route('/ajax/node_properties')
+def get_node_keys():
+    keys = logic.get_node_properties_keys(request.args.get('nodeType'))
+    return jsonify(keys)

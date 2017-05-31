@@ -22,5 +22,26 @@ def get_node_labels():
     return label_list
 
 
+def get_node_properties_keys(node_type):
+    query = "MATCH (n:{type:s}) RETURN distinct keys(n) as propertyKeys".format(**{'type': node_type})
+    result = query_db(query)
+    property_list = []
+    for record in result:
+        for key in record["propertyKeys"]:
+            if key not in property_list:
+                property_list.append(key)
+    return property_list
+
+
+def get_node_relations(node_type, property_key, property_value):
+    query = "MATCH (n:{type:s})-[r]->() WHERE n.{key:s}='{value:s}' RETURN type(r) as relations"\
+        .format(**{'type': node_type, 'key':property_key, 'value':property_value})
+    result = query_db(query)
+    result_list = []
+    for record in result:
+        result_list.append(record["relations"][0])
+    return result_list
+
+
 def build_and_query(form_data):
     return get_node_labels()
