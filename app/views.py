@@ -18,7 +18,10 @@ def index_page():
 
 @app.route('/build_query')
 def query_page():
-    node_labels = logic.get_node_labels()
+    try:
+        node_labels = logic.get_node_labels()
+    except Exception:
+        node_labels = []
     return render_template("build_query.html", node_labels=node_labels)
 
 

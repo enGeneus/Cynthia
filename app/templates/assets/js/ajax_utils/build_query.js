@@ -1,11 +1,11 @@
 $(function(){
 
+    var selectedNode_properties;
+    var filtersAdded = 0;
+
     $("#nodeTypeSel").change(function() {
         var url="/ajax/node_properties";
         var selectedValue = $(this).val();
-
-        property_select = $("#nodePropertySel");
-        property_select.html("");
 
         $.ajax(url, {
             method: "GET",
@@ -14,19 +14,43 @@ $(function(){
             },
             dataType: "json",
             success: function(response) {
-                property_select.removeAttr("disabled");
-                for (var i in response) {
-                    property_select.append("<option>" + response[i] + "</option>")
-                }
+                selectedNode_properties = response;
+                fillSelectOptions($(".nodePropertySel"), selectedNode_properties);
+                removeSelectDisabled();
             },
             error: function(xhr) {
                 alert("Error " + xhr.status);
             }
         });
-    })
+    });
 
-    $(".add-property").click(function(e) {
+    $(".add-property-filter").click(function(e) {
         e.preventDefault();
-        $("#query-fields").append("<div class=\"form-group\"><div class=\"form-group\"><label for=\"nodePropertySel\">Property:</label><select class=\"form-control\" id=\"nodePropertySel\" disabled></select></div></div><div class=\"form-group\"><label for=\"request\">Input String:</label><input type=\"text\" class=\"form-control\" id=\"request\" name=\"request\"/></div>");
-    })
+        filtersAdded++;
+        newForm=$("<div class=\"form-group\"><label>Property:</label><select class=\"form-control nodePropertySel\"></select></div><div class=\"form-group\"><label>Input String:</label><input type=\"text\" class=\"form-control\"/>");
+        newSelect=newForm.find("select").first().attr("name", "filterName" + filtersAdded);
+        newInput=newForm.find("input").first().attr("name", "filterValue" + filtersAdded);
+        if (selectedNode_properties) {
+            fillSelectOptions(newSelect, selectedNode_properties);
+        } else {
+            newSelect.attr("disabled", true);
+        }
+        $("#query-fields").append(newForm);
+    });
+
+    $("#submit-query").click(function(e) {
+        e.preventDefault();
+        formJSON = JSON.stringify($("#query-form").serializeArray());
+        console.log(formJSON);
+    });
 });
+
+function fillSelectOptions(select, options) {
+    for (var i in options) {
+        select.append("<option>" + options[i] + "</option>")
+    }
+}
+
+function removeSelectDisabled() {
+    $(".nodePropertySel").removeAttr("disabled");
+}

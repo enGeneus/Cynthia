@@ -25,41 +25,34 @@
         <![endif]-->
     </head>
     <body>
-        <h1>Query page</h1>
-        <p>It is expected to be a form here...</p>
-
-        <section class="col-md-6">
-            <form action="/results" method="post">
-                <div id="query-fields">
-                    <div class="form-group">
-                        <div class="form-group">
-                            <label for="nodeTypeSel">Node type:</label>
-                            <select class="form-control" id="nodeTypeSel">
-                                <option value="" disabled selected>Select option</option>
-                                {% for label in node_labels %}
-                                <option>{{label}}</option>
-                                {% endfor %}
-                            </select>
+        <section class="container">
+            <h1>Query page</h1>
+            <p>It is expected to be a form here...</p>
+            <form action="/results" method="post" id="query-form">
+                <div class="row">
+                    <div class="panel panel-default col-md-6">
+                        <div class="panel-body">
+                            <div id="query-fields">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="nodeTypeSel">Starting node:</label>
+                                        <select class="form-control" id="nodeTypeSel" name="startingNode">
+                                            <option value="" disabled selected>Select option</option>
+                                            {% for label in node_labels %}
+                                            <option>{{label}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group pull-right">
+                                <button class="btn btn-info add-property-filter"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add filter</button>
+                            </div>
+                            <div class="form-group">
+                                <button id="submit-query" type="submit" class="btn btn-default">Query!</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="form-group">
-                            <label for="nodePropertySel">Property:</label>
-                            <select class="form-control" id="nodePropertySel" disabled>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="request">Input String:</label>
-                        <input type="text" class="form-control" id="request" name="request"/>
-                    </div>
-                </div>
-                <div class="form-group pull-right">
-                    <button class="btn btn-info add-property"><i class="glyphicon glyphicon-plus"></i>&nbsp;OR property</button>
-                    <button class="btn btn-warning add-property"><i class="glyphicon glyphicon-plus"></i>&nbsp;AND property</button>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-default">Query!</button>
                 </div>
             </form>
         </section>
