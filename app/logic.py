@@ -43,5 +43,14 @@ def get_node_relations(node_type, property_key, property_value):
     return result_list
 
 
+def get_name_of_relations_on_relation_general_info():
+    query = "MATCH (a:Relation_general_info) RETURN a.name as name"
+    result = query_db(query)
+    result_list = []
+    for record in result:
+        result_list.append(record["name"][0])
+    return result_list
+
+
 def build_and_query(form_data):
     return get_node_labels()
