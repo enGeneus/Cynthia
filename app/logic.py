@@ -52,5 +52,15 @@ def get_name_of_relations_on_relation_general_info():
     return result_list
 
 
+def get_node_whit_common_relation(node_type, relation_type, node_name):
+    query = "MATCH (a:{node_type:s})-[r:{relation_type}]->(b) WHERE a.name = '{node_name}' RETURN b.name as rel_name"\
+        .format(**{'node_type': node_type, 'relation_type':relation_type, 'node_name':node_name})
+    result = query_db(query)
+    result_list = []
+    for record in result:
+        result_list.append(record["rel_name"][0])
+    return result_list
+
+
 def build_and_query(form_data):
     return get_node_labels()
