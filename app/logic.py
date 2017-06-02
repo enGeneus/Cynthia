@@ -35,11 +35,11 @@ def get_node_properties_keys(node_type):
 
 def get_node_relations(node_type, property_key, property_value):
     query = "MATCH (n:{type:s})-[r]->() WHERE n.{key:s}='{value:s}' RETURN type(r) as relations"\
-        .format(**{'type': node_type, 'key':property_key, 'value':property_value})
+        .format(**{'type': node_type, 'key': property_key, 'value': property_value})
     result = query_db(query)
     result_list = []
     for record in result:
-        result_list.append(record["relations"][0])
+        result_list.append(record["relations"])
     return result_list
 
 
@@ -48,17 +48,17 @@ def get_name_of_relations_on_relation_general_info():
     result = query_db(query)
     result_list = []
     for record in result:
-        result_list.append(record["name"][0])
+        result_list.append(record["name"])
     return result_list
 
 
 def get_node_whit_common_relation(node_type, relation_type, node_name):
     query = "MATCH (a:{node_type:s})-[r:{relation_type}]->(b) WHERE a.name = '{node_name}' RETURN b.name as rel_name"\
-        .format(**{'node_type': node_type, 'relation_type':relation_type, 'node_name':node_name})
+        .format(**{'node_type': node_type, 'relation_type': relation_type, 'node_name': node_name})
     result = query_db(query)
     result_list = []
     for record in result:
-        result_list.append(record["rel_name"][0])
+        result_list.append(record["rel_name"])
     return result_list
 
 
