@@ -1,0 +1,17 @@
+<div class="relation-filter-field">
+    <div class="form-group">
+        <label>Relation:</label>
+        <select class="form-control nodeRelaionSel">
+            {% for relation in relations %}
+            <option>{{relation}}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-danger" onclick="removeFilter(event, this, 'relation');">
+            <i class="glyphicon glyphicon-remove"></i>&nbsp;Remove
+        </button>
+    </div>
+    <div class="form-group">
+        <label>Cutoff:</label>
+        <input type="text" class="form-control"/>
+    </div>
+</div>
