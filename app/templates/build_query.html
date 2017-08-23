@@ -34,60 +34,112 @@
             {% endif %}
             <form action="/results" method="post" id="query-form">
                 <div class="row">
-                    <div class="panel panel-default col-md-12">
-                        <div class="panel-body">
-                            <div id="query-fields">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="startingNode">Starting node:</label>
-                                        <select class="form-control" id="startingNode" name="startingNode">
-                                            <option value="" disabled selected>Select option</option>
-                                            {% for label in node_labels %}
-                                            <option>{{label}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="form-group pull-right">
-                                        <button id="add-relation-filter" class="btn btn-warning">
-                                            <i class="glyphicon glyphicon-plus"></i>&nbsp;Add relation
-                                        </button>
-                                    </div>
-                                    <div class="form-group pull-right">
-                                        <button id="add-property-filter" class="btn btn-info">
-                                            <i class="glyphicon glyphicon-plus"></i>&nbsp;Add filter
-                                        </button>
-                                    </div>
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title"><span>Starting Node</span></div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <select class="form-control" id="startingNode" name="startingNode">
+                                        <option value="" disabled selected>Select option</option>
+                                        {% for label in node_labels %}
+                                        <option value="{{label}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="panel panel-default" id="property-filters-panel" hidden>
-                                        <div class="panel panel-heading">
-                                            Property filters
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title"><span>Species</span></div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="query-fields">
+                                    <div id="species-selection" class="form-group">
+                                        <div class="radio">
+                                            <label><input value="*" type="radio" class="form-control" name="species-radio" checked="checked"/>All species</label>
                                         </div>
-                                        <div class="panel panel-body" id="property-filters">
-                                            <!-- Inside this block it is put the form group from property_filter.html -->
+                                        {% for specie in species %}
+                                        <div class="radio">
+                                            <label><input value="{{specie}}" type="radio" class="form-control" name="species-radio"/>{{specie}}</label>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="panel panel-default" id="relation-filters-panel" hidden>
-                                        <div class="panel panel-heading">
-                                            Relation filters
-                                        </div>
-                                        <div class="panel panel-body" id="relation-filters">
-                                            <!-- Inside this block it is put the form group from relations_filter.html -->
-                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group pull-left">
-                        <button id="submit-query" type="submit" class="btn btn-default">Query!</button>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title"><span>Relations</span></div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="query-fields">
+                                    <div class="form-group">
+                                        {% for relation in relations %}
+                                        <div class="checkbox relation-selection">
+                                            <label><input class="relation-checkbox" type="checkbox" value="{{relation}}">{{relation}}</label>
+                                            <input class="pull-right cutoff-value" type="text" name="cutoffValue" placeholder="cutoff"/>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="properties-filters"></div>
+                    <div class="col-md-12 buttons">
+                        <div class="form-group pull-left">
+                            <button id="add-property-filter" class="btn btn-warning disabled"><i class="fa fa-plus"></i>&nbsp;Add property</button>
+                        </div>
+
+                        <div class="form-group pull-right">
+                            <button id="submit-query" type="submit" class="btn btn-default disabled">Query!</button>
+                        </div>
                     </div>
                 </div>
             </form>
+            <form method="POST" id="serializedForm" action="/results">
+                <input type="hidden" name="json"/>
+            </form>
         </section>
 
+    <div id="filter_pattern" class="col-md-12 property-filter" hidden>
+        <div class="panel panel-default container-fluid">
+            <div class="panel-heading row">
+                <div class="panel-title pull-left"><span>Property</span></div>
+                <div class="input-group pull-right">
+                    <a class="btn btn-danger btn-xs" style="padding: 5px 10px;" title="Remove" onclick="javascript:removeFilter(this)">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <span>Property Name</span>
+                        <select class="form-control property-select" name="property">
+                            <option value="" disabled selected>Select option</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group property-values">
+                        <span>Property value</span>
+                        <br/>
+                        <input type="text" name="propertyValue" placeholder="value"/>
+                    </div>
+                    <a class="btn btn-success btn-sm" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
+                        <i class="fa fa-plus">&nbsp;Add value</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>

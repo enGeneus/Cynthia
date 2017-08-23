@@ -1,37 +1,15 @@
-var propertyFilterHtml;
-var relationFilterHtml;
-var selectedNode_properties;
-var filtersAdded = 0;
-var relationsAdded = 0;
+
+var propertyFieldHtml = "<br/><input type=\"text\" name=\"propertyValue\" placeholder=\"value\"/><a class=\"btn btn-danger btn-xs\" style=\"padding: 5px 10px;\" onclick=\"javascript:removePropertyField(this)\"><i class=\"fa fa-times\"></i></a>";
 
 $(function(){
 
-    $.ajax("/ajax/property_form", {
-        method: "GET",
-        dataType: "html",
-        success: function(response) {
-                propertyFilterHtml = response;
-            },
-            error: function(xhr) {
-                alert("Error " + xhr.status);
-            }
-    });
-
-    $.ajax("/ajax/relations_form", {
-        method: "GET",
-        dataType: "html",
-        success: function(response) {
-                relationFilterHtml = response;
-            },
-            error: function(xhr) {
-                alert("Error " + xhr.status);
-            }
-    });
+    var selectedNode_properties;
 
     $("#startingNode").change(function() {
         var url="/ajax/node_properties";
         var selectedValue = $(this).val();
 
+        // Load properties
         $.ajax(url, {
             method: "GET",
             data: {
@@ -40,53 +18,39 @@ $(function(){
             dataType: "json",
             success: function(response) {
                 selectedNode_properties = response;
-                console.log(response);
-                fillSelectOptions($(".nodePropertySel"), selectedNode_properties);
-                removeSelectDisabled();
+                fillSelectOptions($("#filter_pattern .property-select"), selectedNode_properties);
             },
             error: function(xhr) {
                 alert("Error " + xhr.status);
             }
         });
+
+        // Enable add property button and query button
+        $(".buttons button").removeClass("disabled");
     });
 
     $("#add-property-filter").click(function(e) {
         e.preventDefault();
-        filtersAdded++;
-        var newFilterFields=$(propertyFilterHtml);
-        newSelect=newFilterFields.find("select").first().attr("name", "filterName" + filtersAdded);
-        newInput=newFilterFields.find("input").first().attr("name", "filterValue" + filtersAdded);
-        if (selectedNode_properties) {
-            fillSelectOptions(newSelect, selectedNode_properties);
-        } else {
-            newSelect.attr("disabled", true);
-        }
-        $("#property-filters").append(newFilterFields);
-        if (filtersAdded == 1) {
-            $("#property-filters").parent().show();
-        }
-    });
-
-    $("#add-relation-filter").click(function(e) {
-        e.preventDefault();
-        relationsAdded++;
-        var newRelationFields=$(relationFilterHtml);
-        newSelect=newRelationFields.find("select").first().attr("name", "relationName" + relationsAdded);
-        newInput=newRelationFields.find("input").first().attr("name", "cutoffValue" + relationsAdded);
-        $("#relation-filters").append(newRelationFields);
-        if (relationsAdded == 1) {
-            $("#relation-filters").parent().show();
-        }
+        html_to_add = $("#filter_pattern").clone();
+        html_to_add.removeAttr("id"); // Avoid duplicate IDs
+        $("#properties-filters").append(html_to_add);
+        html_to_add.removeAttr("hidden");
     });
 
     $("#submit-query").click(function(e) {
         e.preventDefault();
         formJSON = serializeFormToJSON();
         console.log(formJSON);
+
+        // Serialized data are set to the form and sent to the server
+        $("#serializedForm input").val(formJSON);
+        $("#serializedForm").submit();
     });
 });
 
 function fillSelectOptions(select, options) {
+    select.empty();
+    select.append("<option value=\"\" disabled selected>Select option</option>");
     for (var i in options) {
         select.append("<option>" + options[i] + "</option>");
     }
@@ -96,51 +60,78 @@ function removeSelectDisabled() {
     $(".nodePropertySel").removeAttr("disabled");
 }
 
-function removeFilter(e, button, filterType) {
-    e.preventDefault();
-    $(button).parent().parent().remove();
-    if (filterType == 'property') {
-        filtersAdded--;
-        if (filtersAdded == 0) {
-            $("#property-filters-panel").hide();
-        }
-    } else if (filterType == 'relation') {
-        relationsAdded--;
-        if (relationsAdded == 0) {
-            $("#relation-filters-panel").hide();
-        }
-    }
+function removeFilter(button) {
+    $(button).closest(".property-filter").remove();
+}
+
+function addPropertyField(button) {
+    $(button).parent().children().first().append(propertyFieldHtml);
+}
+
+function removePropertyField(button) {
+    $(button).prev().prev().remove();
+    $(button).prev().remove();
+    $(button).remove();
 }
 
 function serializeFormToJSON() {
     var startingNode = $("#startingNode").val();
-    var json = "{\"startingNodeType\": \"" + startingNode + "\", \"filters\": [" ;
 
-    // Add json array for property filter
-    $(".property-filter-field").each(function (index, object) {
-        var propertyName = $(object).children().first().find("select").val();
-        var propertyValue = $(object).children().last().find("input").val();
-        json = json + "{\"propertyName\": \"" + propertyName + "\", \"propertyValue\": \"" + propertyValue + "\"}, ";
+    // Add starting node type
+    var json = "{\"startingNodeType\": \"" + startingNode + "\"," ;
+
+    // Add species
+    $("#species-selection input").each(function (index, object) {
+        if($(object).is(':checked')) {
+            json = json + " \"specie\": \"" + $(object).val() + "\",";
+        }
     });
 
-    // Remove last comma
-    if (filtersAdded > 0) {
-        json = json.slice(0, -2);
-    }
-
-    // Close previous array and add new one for relations
-    json = json + "], \"relationships\": [";
-    $(".relation-filter-field").each(function (index, object) {
-        var relationName = $(object).children().first().find("select").val();
-        var cutoffValue = $(object).children().last().find("input").val();
-        json = json + "{\"relationName\": \"" + relationName + "\", \"cutoffValue\": \"" + cutoffValue + "\"}, ";
+    // Add relations
+    json = json + " \"relations\": [";
+    var added_relations = false;
+    $(".relation-selection").each(function (index, object) {
+        if($(object).find(".relation-checkbox").is(':checked')) {
+            added_relations = true;
+            json = json + "{\"relationName\": \"" + $(object).find(".relation-checkbox").val() + "\",";
+            json = json + " \"cutoffValue\": \"" + $(object).find(".cutoff-value").val() + "\"},"
+        }
     });
+    if (added_relations) {
+        json = json.slice(0, -1);
+    }
+    json = json + "]";
 
+    // Add properties
+    json = json + ", \"properties\": [";
+    var property_added = false;
+    $(".property-filter").each(function (index, object) {
+        var propertyName = $(object).find(".property-select").val();
+        if (propertyName != null) {
+            property_added = true;
+            json = json + "{\"propertyName\": \"" + propertyName + "\", \"values\": [";
+            var value_added = false;
+            $(object).find(".property-values input").each(function (index, object) {
+                if ($(object).val() != "") {
+                    json = json + "\"" + $(object).val() + "\",";
+                    value_added = true;
+                }
+            });
+            // Remove last comma
+            if (value_added) {
+                json = json.slice(0, -1);
+            }
+            // Close values array and property json object
+            json = json + "]},"
+        }
+    });
     // Remove last comma
-    if (relationsAdded > 0) {
-        json = json.slice(0, -2);
+    if (property_added) {
+        json = json.slice(0, -1);
     }
 
+    // Close property array and whole json object
     json = json + "]}";
-    return json;
+
+    return json
 }

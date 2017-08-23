@@ -29,11 +29,7 @@
         {% if not results %}
             <p>No results</p>
         {% else %}
-            <ul>
-                {% for result in results %}
-                    <li>{{result}}</li>
-                {% endfor %}
-            </ul>
+            {{results}}
         {% endif %}
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>

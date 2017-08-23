@@ -62,5 +62,14 @@ def get_node_whit_common_relation(node_type, relation_type, node_name):
     return result_list
 
 
+# TO DO: Complete this method acquiring species list from db
+def get_species():
+    species=[]
+    species.append('mus musculus')
+    species.append('human')
+    return species
+
+
+# TO DO: Complete this method building the query, executing it and sending back the results
 def build_and_query(form_data):
-    return get_node_labels()
+    return form_data
