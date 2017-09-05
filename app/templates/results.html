@@ -25,6 +25,7 @@
         <![endif]-->
     </head>
     <body>
+
         <h1>RESULTS PAGE</h1>
         {% if not results %}
             <p>No results</p>
@@ -32,10 +33,13 @@
             {{results}}
         {% endif %}
 
+
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
         <script src="assets/js/headroom.min.js"></script>
         <script src="assets/js/jQuery.headroom.min.js"></script>
         <script src="assets/js/template.js"></script>
+
+        <script src="assets/js/ajax_utils/build_query.js"></script>
     </body>
 </html>

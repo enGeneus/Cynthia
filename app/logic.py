@@ -5,8 +5,8 @@ import config
 
 
 def query_db(query):
-    db_url = "bolt://{host:s}:{port:d}".format(**{'host': config.EXTERNAL_DB_HOST, 'port': config.EXTERNAL_DB_PORT})
-    driver = GraphDatabase.driver(db_url, auth=basic_auth(config.EXTERNAL_DB_USER, config.EXTERNAL_DB_PASS))
+    db_url = "bolt://{host:s}:{port:d}".format(**{'host': config.GRAPH_DB_HOST, 'port': config.GRAPH_DB_PORT})
+    driver = GraphDatabase.driver(db_url, auth=basic_auth(config.GRAPH_DB_USER, config.GRAPH_DB_PASS))
     session = driver.session()
     result = session.run(query)
     session.close()
@@ -64,7 +64,7 @@ def get_node_whit_common_relation(node_type, relation_type, node_name):
 
 # TO DO: Complete this method acquiring species list from db
 def get_species():
-    species=[]
+    species = list()
     species.append('mus musculus')
     species.append('human')
     return species
