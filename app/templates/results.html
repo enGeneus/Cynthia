@@ -86,8 +86,10 @@ var spinner = new Spinner(opts).spin(target);
 $.post( "executes_query", { query: "{{results}}" })
   .done(function( data ) {
     alert( "Data Loaded: " + data );
-    
-$("#loading").hide();
+  
+  document.getElementById("#loading");
+  loading.innerHTML = data;  
+//$("#loading").hide();
 
 var cy = cytoscape({
   container: document.querySelector('#cy'),
