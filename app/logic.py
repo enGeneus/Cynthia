@@ -84,14 +84,14 @@ def build_and_query(form_data):
     prop_num = 0
 
     # controlla se ci sono le proprietà
-    if 'properties' in j:
+    if j['properties'] != []:
         prop_num = (len(j['properties']))
 
     # parte statica della query
     relation_part = "MATCH (n:" + j['startingNodeType'] + ")"
 
     # controlla se ci sono le relazioni
-    if 'relations' in j:
+    if j['relations'] != []:
         rel_num = (len(j['relations']))
         relation_part = relation_part + "-[r:"
 
@@ -123,7 +123,7 @@ def build_and_query(form_data):
         relation_part = relation_part + " WHERE "
 
     if prop_num == 0:
-        relation_part = relation_part[:-5]
+        relation_part = relation_part[:-7]
 
     # aggiornamento del dizionario
     for i in range(prop_num):
@@ -140,7 +140,7 @@ def build_and_query(form_data):
 
             if diz_prop[i] == 1:
                 where_part = where_part + "n." + j['properties'][i]['propertyName'] + " = " + "'" + \
-                             j['properties'][i]['values'][k] + "'"
+                             j['properties'][i]['values'][k] + "' "
 
             else:
                 where_part = where_part + "n." + j['properties'][i]['propertyName'] + " = " + "'" + \

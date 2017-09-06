@@ -5,6 +5,7 @@ from app import app
 from app import logic
 import neo4j
 import html
+import json
 
 
 @app.route('/assets/<path:path>')
@@ -51,7 +52,9 @@ def executes_query():
     results = form_data['query']
     results=html.unescape(results)
     query_results=logic.query_db(results)
-    return render_template("empty.html", query_results=query_results)
+    for record in query_results:
+        print (record)
+        return render_template("empty.html", query_results=record)
 
 
 @app.route('/error')
