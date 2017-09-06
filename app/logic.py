@@ -159,4 +159,4 @@ def build_and_query(form_data):
 
     query = relation_part + where_part + return_part
 
-    return form_data
+    return query
