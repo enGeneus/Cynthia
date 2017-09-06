@@ -14,6 +14,42 @@ def query_db(query):
     return result
 
 
+
+def transform_entry(entry):
+  """
+  Turn the given neo4j Node into a dictionary based on the Node's type.
+  The raw neo4j Node doesn't serialize to JSON so this converts it into
+  something that will.
+  @param entry:       the neo4j Node to transform.
+  """
+
+  # This transform is used for just nodes as well so first check to see if there is a relation
+  if 'relation' not in entry:
+    node = entry
+    relation = {'weight':1}
+  elif entry['relation'] is None:
+    node = entry['node']
+    relation = {'weight':1}
+  else:
+    node = entry['node']
+    relation = entry['relation']
+
+  # Skip anything that isn't a dict or doesn't have an ntype property (bookmarks are skipped here)
+  if type(node) is not dict or 'ntype' not in node:
+    return None
+
+  if node['ntype'] == 'user':
+    return {'user':{'name':node['name'],'user_id':node['userId'], 'weight':relation['weight']}}
+  elif node['ntype'] == 'a':
+    return {'answer':{'post_id':node['postId'], 'favorite_count':node['favoriteCount'], 'score':node['score'], 'weight':relation['weight']}}
+  elif node['ntype'] == 'q':
+    return {'question':{'post_id':node['postId'], 'favorite_count':node['favoriteCount'], 'score':node['score'], 'weight':relation['weight']}}
+  elif node['ntype'] == 'tag':
+    return {'tag':{'name':node['tagName'], 'weight':relation['weight']}}
+  else:
+    return None
+
+
 def get_node_labels():
     query = "MATCH (n) RETURN distinct labels(n) as label"
     result = query_db(query)

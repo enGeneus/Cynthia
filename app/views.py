@@ -51,7 +51,15 @@ def executes_query():
     results = form_data['query']
     results=html.unescape(results)
     query_results=logic.query_db(results)
-    return render_template("empty.html", query_results=html.unescape(query_results.data()))
+    #for i in query_results.data():
+    #    return render_template("empty.html", query_results=html.unescape(json.dumps(i)))
+    #while(query_results.hasNext()):
+    #toreturn=""
+    #for i in query_results.records():
+    #    toreturn=toreturn+i.values()
+    #return render_template("empty.html", query_results=html.unescape(toreturn))
+    #for r in query_results:
+    return render_template("empty.html", query_results=(query_results.data()))
 
 
 @app.route('/error')
