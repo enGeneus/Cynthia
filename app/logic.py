@@ -155,7 +155,11 @@ def build_and_query(form_data):
     if rel_num > 1:
         where_part = where_part + ") "
 
-    return_part = "RETURN r,n,t"
+    return_part = "RETURN n"
+
+    if rel_num > 0:
+        return_part = return_part+",r,t"
+
 
     query = relation_part + where_part + return_part
 
