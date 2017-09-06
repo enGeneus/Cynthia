@@ -18,21 +18,31 @@
         <link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
         <link rel="stylesheet" href="assets/css/main.css">
 
+        <link href="assets/css/style-graph.css" rel="stylesheet">
+
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
         <script src="assets/js/html5shiv.js"></script>
         <script src="assets/js/respond.min.js"></script>
         <![endif]-->
     </head>
-    <body>
+<body style="background-color:#BBBBBB;">
 
-        <h1>RESULTS PAGE</h1>
-        {% if not results %}
-            <p>No results</p>
-        {% else %}
-            {{results}}
-        {% endif %}
+<div id="loading" style="width:100%;height:100%;margin-top:10%;">
 
+<h1 style="width:100%;text-align:center;">Caricamento risultati in corso...</h1>
+
+</div>
+      
+      
+
+    <div id="cy"></div>
+    
+      
+      
+
+
+        <script src="assets/js/spin.min.js"></script>
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
@@ -41,5 +51,137 @@
         <script src="assets/js/template.js"></script>
 
         <script src="assets/js/ajax_utils/build_query.js"></script>
+        
+   	 	<script src="assets/js/cytoscape.min.js"></script>    
+
+        
+        <script>
+        
+var opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 42 // The radius of the inner circle
+, scale: 1 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#000' // #rgb or #rrggbb or array of colors
+, opacity: 0.25 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '50%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'absolute' // Element positioning
+}
+var target = document.getElementById('loading')
+var spinner = new Spinner(opts).spin(target);
+    
+
+$.post( "executes_query", { query: "{{results}}" })
+  .done(function( data ) {
+    alert( "Data Loaded: " + data );
+    
+$("#loading").hide();
+
+var cy = cytoscape({
+  container: document.querySelector('#cy'),
+
+  boxSelectionEnabled: false,
+  autounselectify: true,
+
+
+
+
+  style: cytoscape.stylesheet()
+    .selector('node')
+      .css({
+        'width': 'mapData(weight, 40, 80, 20, 60)',      
+        'shape': 'data(faveShape)',
+        'content': 'data(name)',
+        'text-valign': 'center',
+        'color': 'white',
+        'background-color': 'data(faveColor)',        
+        'text-outline-width': 2,
+        'text-outline-color': '#000'
+      })
+    .selector('edge')
+      .css({
+        'curve-style': 'bezier',
+        'target-arrow-shape': 'triangle',
+        'target-arrow-color': '#900',
+        'line-color': '#900',
+        'width': 1,
+        'label': 'data(label)'
+      })
+    .selector(':selected')
+      .css({
+        'background-color': 'black',
+        'line-color': 'black',
+        'target-arrow-color': 'black',
+        'source-arrow-color': 'black'
+      })
+    .selector('edge.autorotate')
+      .css({
+        'edge-text-rotation': 'autorotate'
+      })      
+    .selector('.faded')
+      .css({
+        'opacity': 0.25,
+        'text-opacity': 0
+      }),
+
+  elements: {
+    nodes: [
+      { data: { id: 'j', name: 'Jerrye', weight: 65, faveColor: '#001122', faveShape: 'rectangle' } },
+      { data: { id: 'e', name: 'Elaine', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
+      { data: { id: 'k', name: 'Kramer', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
+      { data: { id: 'g', name: 'George', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } }
+    ],
+    edges: [
+      { data: { source: 'j', target: 'e' } },
+      { data: { source: 'j', target: 'k' } },
+      { data: { source: 'j', target: 'g' } },
+      { data: { source: 'e', target: 'j' } },
+      { data: { source: 'e', target: 'k' } },
+      { data: { source: 'k', target: 'j' } },
+      { data: { source: 'k', target: 'e' } },
+      { data: { source: 'k', target: 'g' } },
+      { data: { source: 'g', target: 'j', label: 'autorotate (move my nodes)' }, classes: 'autorotate' }
+    ]
+  },
+
+  layout: {
+    name: 'grid',
+    padding: 10
+  }
+});
+
+cy.on('tap', 'node', function(e){
+  var node = e.cyTarget;
+  var neighborhood = node.neighborhood().add(node);
+
+  cy.elements().addClass('faded');
+  neighborhood.removeClass('faded');
+});
+
+cy.on('tap', function(e){
+  if( e.cyTarget === cy ){
+    cy.elements().removeClass('faded');
+  }
+});
+    
+    
+    
+    
+  });
+                
+        
+        </script>
     </body>
 </html>

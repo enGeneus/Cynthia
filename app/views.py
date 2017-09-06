@@ -4,6 +4,7 @@ from flask import render_template, send_from_directory, request, jsonify
 from app import app
 from app import logic
 import neo4j
+import html
 
 
 @app.route('/assets/<path:path>')
@@ -42,6 +43,15 @@ def query_handler():
     form_data = request.form
     results = logic.build_and_query(form_data['json'])
     return render_template("results.html", results=results)
+
+
+@app.route('/executes_query', methods=['POST'])
+def executes_query():
+    form_data = request.form
+    results = form_data['query']
+    results=html.unescape(results)
+    query_results=logic.query_db(results)
+    return render_template("empty.html", query_results=query_results)
 
 
 @app.route('/error')
