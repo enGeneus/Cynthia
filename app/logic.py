@@ -200,5 +200,94 @@ def build_and_query(form_data):
     query = relation_part + where_part + return_part
 
 
-    #ciao
+    return query
+
+
+def build_and_query_v2(form_data):
+    j = json.loads(form_data)
+
+    query = ""
+    rel_num = 0
+    if j['relations'] != []:
+        rel_num = (len(j['relations']))
+
+    for i in range(len(j['startingNodes'])):
+
+        if i != 0:
+            query = query + " WITH t "
+
+        prop_num = 0
+
+        if j['startingNodes'][i]['properties'] != []:
+            prop_num = (len(j['startingNodes'][i]['properties']))
+
+        relation_part = "MATCH (n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")"
+
+        if rel_num > 0:
+            relation_part = relation_part + "-[r" + str(i) + ":PicTar|RNA22]->"
+
+        # dizionario per le property, indica per ogni proprietà (chiave) quanti valori possiede (valore)
+        diz_prop = {}
+
+        relation_part = relation_part + "(t)"
+
+        if rel_num == 0:
+            relation_part = relation_part[:-3]
+
+        if rel_num > 1:
+            relation_part = relation_part + " WHERE ("
+        else:
+            relation_part = relation_part + " WHERE "
+
+        if prop_num == 0:
+            relation_part = relation_part[:-7]
+
+        # aggiornamento del dizionario
+        for h in range(prop_num):
+            prop = (len(j['startingNodes'][i]['properties'][h]['values']))
+            upd = {h: prop}
+            diz_prop.update(upd)
+
+        where_part = ""
+
+        # aggiunta delle proprietà alla query
+        for m in range(len(diz_prop)):
+
+            for k in range(int(diz_prop[m])):
+
+                if diz_prop[m] == 1:
+                    where_part = where_part + "n" + str(i) + "." + j['startingNodes'][i]['properties'][m][
+                        'name'] + " = " + "'" + \
+                                 j['startingNodes'][i]['properties'][m]['values'][k] + "'"
+
+                else:
+                    where_part = where_part + "n" + str(i) + "." + j['startingNodes'][i]['properties'][m][
+                        'name'] + " = " + "'" + \
+                                 j['startingNodes'][i]['properties'][m]['values'][k] + "'" + " OR "
+
+            if int(diz_prop[m]) > 1:
+                where_part = where_part[:-4]
+
+            if len(diz_prop) > 1 and m != len(diz_prop) - 1:
+                where_part = where_part + ") AND ("
+
+        if prop_num > 1:
+            where_part = where_part + ")"
+
+        for a in range(rel_num):
+            if a == 0:
+                where_part = where_part + " AND ("
+            if rel_num == 1:
+                where_part = where_part + "r" + str(i) + ".name = '" + j['relations'][a]['relationName'] + "') "
+
+            if rel_num > 1:
+                where_part = where_part + "r" + str(i) + ".name = '" + j['relations'][a]['relationName'] + "' OR "
+                if a == rel_num - 1:
+                    where_part = where_part[:-4]
+                    where_part = where_part + ") "
+
+        query = query + relation_part + where_part
+
+    query = query + "RETURN t"
+
     return query
