@@ -107,14 +107,121 @@ var decodeEntities = (function() {
 $.post( "executes_query", { query: "{{results}}" })
   .done(function( data ) {
   
-  alert(decodeEntities(data));
-  querydata = JSON.parse(decodeEntities(data));  
-  
-  loading.innerHTML = decodeEntities(data);  
-  
 
-//$("#loading").hide();
-/*
+  querydata = JSON.parse(decodeEntities(data));  
+  querydata = querydata.data;
+  loading.innerHTML = decodeEntities(data);  
+
+	counter_record=0;
+
+
+	var demoNodes = [];
+	var demoEdges = [];	
+	
+	
+	
+while(true) {
+
+	record = querydata["record_"+counter_record];
+	if(record==null)
+		break;
+		
+	thisnodename="";
+	thisrelname="";
+	thistargetname="";
+	
+	for(i=0; i<3; i++) {
+		result = record["result_"+i];
+		if(result == null)
+			continue;		
+		
+		result_type = result.result_type;
+		label = result.label;
+
+		properties = result.properties;
+		
+		if(result_type == "n") {//is a node
+			species = properties.species;
+			thisnodename = properties.name;
+			accession = properties.accession;
+			mirbase_link = properties.mirbase_link;	
+			
+			
+			demoNodes.push({
+
+    		data: {
+        		id: thisnodename,
+        		name:thisnodename,
+        		nodetype:"node",
+        		accession:accession,
+        		mirbase_link:mirbase_link,
+        		species:species,
+		  		weight:50,
+		  		faveColor: "#0000BB",
+		  		faveShape: "ellipse"       
+    		}
+			});
+			
+
+		
+		}
+		else if(result_type == "r") {//is a relation
+			score = properties.score;
+			source_microrna = properties.source_microrna;
+			thisrelname = properties.name;
+			source_target = properties.source_target;		
+		
+		
+	    	demoEdges.push({
+   	     data: {
+            source: source_microrna,
+            target: source_target,
+            label: thisrelname,
+            score: score
+        },
+        classes: 'autorotate'
+   	 });		
+		
+	
+		
+		}
+		else if(result_type == "t") {//is a target
+			geneid = properties.geneid;
+			species = properties.species;
+			ens_code = properties.ens_code;
+			thistargetname = properties.name;
+
+
+			demoNodes.push({
+
+    		data: {
+        		id: thistargetname,
+        		name:thistargetname,
+        		nodetype:"target",
+        		species:species,
+        		ens_code:ens_code,
+        		geneid: geneid,
+		  		weight:50,
+		  		faveColor: "#00BB00",
+		  		faveShape: "ellipse"       
+    		}
+			});	
+
+		}
+	}
+
+
+
+	counter_record++;
+  
+  
+}
+
+
+
+
+$("#loading").hide();
+
 var cy = cytoscape({
   container: document.querySelector('#cy'),
 
@@ -140,8 +247,8 @@ var cy = cytoscape({
       .css({
         'curve-style': 'bezier',
         'target-arrow-shape': 'triangle',
-        'target-arrow-color': '#900',
-        'line-color': '#900',
+        'target-arrow-color': '#044',
+        'line-color': '#044',
         'width': 1,
         'label': 'data(label)'
       })
@@ -163,23 +270,8 @@ var cy = cytoscape({
       }),
 
   elements: {
-    nodes: [
-      { data: { id: 'j', name: 'Jerrye', weight: 65, faveColor: '#001122', faveShape: 'rectangle' } },
-      { data: { id: 'e', name: 'Elaine', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
-      { data: { id: 'k', name: 'Kramer', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
-      { data: { id: 'g', name: 'George', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } }
-    ],
-    edges: [
-      { data: { source: 'j', target: 'e' } },
-      { data: { source: 'j', target: 'k' } },
-      { data: { source: 'j', target: 'g' } },
-      { data: { source: 'e', target: 'j' } },
-      { data: { source: 'e', target: 'k' } },
-      { data: { source: 'k', target: 'j' } },
-      { data: { source: 'k', target: 'e' } },
-      { data: { source: 'k', target: 'g' } },
-      { data: { source: 'g', target: 'j', label: 'autorotate (move my nodes)' }, classes: 'autorotate' }
-    ]
+  	nodes: demoNodes,
+    edges: demoEdges
   },
 
   layout: {
@@ -192,6 +284,7 @@ cy.on('tap', 'node', function(e){
   var node = e.cyTarget;
   var neighborhood = node.neighborhood().add(node);
 
+
   cy.elements().addClass('faded');
   neighborhood.removeClass('faded');
 });
@@ -200,13 +293,37 @@ cy.on('tap', function(e){
   if( e.cyTarget === cy ){
     cy.elements().removeClass('faded');
   }
+   
+  
+  
+  
 });
     
-    */
+    
     
     
   });
-                
+           
+           
+    /*nodes: [
+      { data: { id: 'j', name: 'Jerrye', weight: 65, faveColor: '#001122', faveShape: 'rectangle' } },
+      { data: { id: 'e', name: 'Elaine', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
+      { data: { id: 'k', name: 'Kramer', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
+      { data: { id: 'g', name: 'George', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } }
+    ],
+    edges: [
+    
+      { data: { source: 'j', target: 'e' } },
+      { data: { source: 'j', target: 'k' } },
+      { data: { source: 'j', target: 'g' } },
+      { data: { source: 'e', target: 'j' } },
+      { data: { source: 'e', target: 'k' } },
+      { data: { source: 'k', target: 'j' } },
+      { data: { source: 'k', target: 'e' } },
+      { data: { source: 'k', target: 'g' } },
+      { data: { source: 'g', target: 'j', label: 'autorotate (move my nodes)' }, classes: 'autorotate' }
+    ]  
+*/                
         
         </script>
     </body>
