@@ -38,6 +38,26 @@ def query_page():
                            message=message)
 
 
+@app.route('/build_query_v2')
+def query_page_v2():
+    node_labels = []
+    species = []
+    relations = []
+    try:
+        node_labels = logic.get_node_labels()
+        species = logic.get_species()
+        relations = logic.get_name_of_relations_on_relation_general_info()
+        message = {}
+    except neo4j.exceptions.ServiceUnavailable:
+        node_labels = []
+        message = {'type': 'error', 'message': 'NO_CONN'}
+    return render_template("build_query_v2.html",
+                           node_labels=node_labels,
+                           species=species,
+                           relations=relations,
+                           message=message)
+
+
 @app.route('/results', methods=['POST'])
 def query_handler():
     form_data = request.form
