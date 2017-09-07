@@ -20,29 +20,49 @@
 
         <link href="assets/css/style-graph.css" rel="stylesheet">
 
+        <style>
+            #loading-message h1 {
+                width: 100%;
+                text-align: center;
+            }
+
+            .loader {
+                border: 16px solid #f3f3f3; /* Light grey */
+                border-top: 16px solid #3498db; /* Blue */
+                border-radius: 50%;
+                width: 160px;
+                height: 160px;
+                animation: spin 2s linear infinite;
+                margin-top: 100px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
         <script src="assets/js/html5shiv.js"></script>
         <script src="assets/js/respond.min.js"></script>
         <![endif]-->
     </head>
-<body style="background-color:#BBBBBB;">
+    <body>
+        <section class="container">
+            <div id="loading-message">
+                <h1>Caricamento risultati in corso...</h1>
+                <div class="loader"></div>
+            </div>
+            <div id="results">
+                <div id="resultData" hidden></div>
+                <div id="cy"></div>
+            </div>
+        </section>
 
-<div id="loading" style="width:100%;height:100%;margin-top:10%;">
-
-<h1 style="width:100%;text-align:center;">Caricamento risultati in corso...</h1>
-
-</div>
-      
-      
-
-    <div id="cy"></div>
-    
-      
-      
-
-
-        <script src="assets/js/spin.min.js"></script>
+        <input type="hidden" id="query" name="query" value="{{query}}"/>
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
@@ -50,281 +70,10 @@
         <script src="assets/js/jQuery.headroom.min.js"></script>
         <script src="assets/js/template.js"></script>
 
+   	 	<script src="assets/js/cytoscape.min.js"></script>
+
         <script src="assets/js/ajax_utils/build_query.js"></script>
-        
-   	 	<script src="assets/js/cytoscape.min.js"></script>    
+        <script src="assets/js/ajax_utils/results.js"></script>
 
-        
-        <script>
-        
-var opts = {
-  lines: 13 // The number of lines to draw
-, length: 28 // The length of each line
-, width: 14 // The line thickness
-, radius: 42 // The radius of the inner circle
-, scale: 1 // Scales overall size of the spinner
-, corners: 1 // Corner roundness (0..1)
-, color: '#000' // #rgb or #rrggbb or array of colors
-, opacity: 0.25 // Opacity of the lines
-, rotate: 0 // The rotation offset
-, direction: 1 // 1: clockwise, -1: counterclockwise
-, speed: 1 // Rounds per second
-, trail: 60 // Afterglow percentage
-, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-, zIndex: 2e9 // The z-index (defaults to 2000000000)
-, className: 'spinner' // The CSS class to assign to the spinner
-, top: '50%' // Top position relative to parent
-, left: '50%' // Left position relative to parent
-, shadow: false // Whether to render a shadow
-, hwaccel: false // Whether to use hardware acceleration
-, position: 'absolute' // Element positioning
-}
-var target = document.getElementById('loading')
-var spinner = new Spinner(opts).spin(target);
-    
-    
-var decodeEntities = (function() {
-  // this prevents any overhead from creating the object each time
-  var element = document.createElement('div');
-
-  function decodeHTMLEntities (str) {
-    if(str && typeof str === 'string') {
-      // strip script/html tags
-      str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-      str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
-      element.innerHTML = str;
-      str = element.textContent;
-      element.textContent = '';
-    }
-
-    return str;
-  }
-
-  return decodeHTMLEntities;
-})();    
-    
-
-$.post( "executes_query", { query: "{{results}}" })
-  .done(function( data ) {
-  
-
-  querydata = JSON.parse(decodeEntities(data));  
-  querydata = querydata.data;
-  loading.innerHTML = decodeEntities(data);  
-
-	counter_record=0;
-
-
-	var demoNodes = [];
-	var demoEdges = [];	
-	
-	
-	
-while(true) {
-
-	record = querydata["record_"+counter_record];
-	if(record==null)
-		break;
-		
-	thisnodename="";
-	thisrelname="";
-	thistargetname="";
-	
-	for(i=0; i<3; i++) {
-		result = record["result_"+i];
-		if(result == null)
-			continue;		
-		
-		result_type = result.result_type;
-		label = result.label;
-
-		properties = result.properties;
-		
-		if(result_type == "n") {//is a node
-			species = properties.species;
-			thisnodename = properties.name;
-			accession = properties.accession;
-			mirbase_link = properties.mirbase_link;	
-			
-			
-			demoNodes.push({
-
-    		data: {
-        		id: thisnodename,
-        		name:thisnodename,
-        		nodetype:"node",
-        		accession:accession,
-        		mirbase_link:mirbase_link,
-        		species:species,
-		  		weight:50,
-		  		faveColor: "#0000BB",
-		  		faveShape: "ellipse"       
-    		}
-			});
-			
-
-		
-		}
-		else if(result_type == "r") {//is a relation
-			score = properties.score;
-			source_microrna = properties.source_microrna;
-			thisrelname = properties.name;
-			source_target = properties.source_target;		
-		
-		
-	    	demoEdges.push({
-   	     data: {
-            source: source_microrna,
-            target: source_target,
-            label: thisrelname,
-            score: score
-        },
-        classes: 'autorotate'
-   	 });		
-		
-	
-		
-		}
-		else if(result_type == "t") {//is a target
-			geneid = properties.geneid;
-			species = properties.species;
-			ens_code = properties.ens_code;
-			thistargetname = properties.name;
-
-
-			demoNodes.push({
-
-    		data: {
-        		id: thistargetname,
-        		name:thistargetname,
-        		nodetype:"target",
-        		species:species,
-        		ens_code:ens_code,
-        		geneid: geneid,
-		  		weight:50,
-		  		faveColor: "#00BB00",
-		  		faveShape: "ellipse"       
-    		}
-			});	
-
-		}
-	}
-
-
-
-	counter_record++;
-  
-  
-}
-
-
-
-
-$("#loading").hide();
-
-var cy = cytoscape({
-  container: document.querySelector('#cy'),
-
-  boxSelectionEnabled: false,
-  autounselectify: true,
-
-
-
-
-  style: cytoscape.stylesheet()
-    .selector('node')
-      .css({
-        'width': 'mapData(weight, 40, 80, 20, 60)',      
-        'shape': 'data(faveShape)',
-        'content': 'data(name)',
-        'text-valign': 'center',
-        'color': 'white',
-        'background-color': 'data(faveColor)',        
-        'text-outline-width': 2,
-        'text-outline-color': '#000'
-      })
-    .selector('edge')
-      .css({
-        'curve-style': 'bezier',
-        'target-arrow-shape': 'triangle',
-        'target-arrow-color': '#044',
-        'line-color': '#044',
-        'width': 1,
-        'label': 'data(label)'
-      })
-    .selector(':selected')
-      .css({
-        'background-color': 'black',
-        'line-color': 'black',
-        'target-arrow-color': 'black',
-        'source-arrow-color': 'black'
-      })
-    .selector('edge.autorotate')
-      .css({
-        'edge-text-rotation': 'autorotate'
-      })      
-    .selector('.faded')
-      .css({
-        'opacity': 0.25,
-        'text-opacity': 0
-      }),
-
-  elements: {
-  	nodes: demoNodes,
-    edges: demoEdges
-  },
-
-  layout: {
-    name: 'grid',
-    padding: 10
-  }
-});
-
-cy.on('tap', 'node', function(e){
-  var node = e.cyTarget;
-  var neighborhood = node.neighborhood().add(node);
-
-
-  cy.elements().addClass('faded');
-  neighborhood.removeClass('faded');
-});
-
-cy.on('tap', function(e){
-  if( e.cyTarget === cy ){
-    cy.elements().removeClass('faded');
-  }
-   
-  
-  
-  
-});
-    
-    
-    
-    
-  });
-           
-           
-    /*nodes: [
-      { data: { id: 'j', name: 'Jerrye', weight: 65, faveColor: '#001122', faveShape: 'rectangle' } },
-      { data: { id: 'e', name: 'Elaine', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
-      { data: { id: 'k', name: 'Kramer', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
-      { data: { id: 'g', name: 'George', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } }
-    ],
-    edges: [
-    
-      { data: { source: 'j', target: 'e' } },
-      { data: { source: 'j', target: 'k' } },
-      { data: { source: 'j', target: 'g' } },
-      { data: { source: 'e', target: 'j' } },
-      { data: { source: 'e', target: 'k' } },
-      { data: { source: 'k', target: 'j' } },
-      { data: { source: 'k', target: 'e' } },
-      { data: { source: 'k', target: 'g' } },
-      { data: { source: 'g', target: 'j', label: 'autorotate (move my nodes)' }, classes: 'autorotate' }
-    ]  
-*/                
-        
-        </script>
     </body>
 </html>
