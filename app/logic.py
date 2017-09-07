@@ -285,8 +285,6 @@ def build_and_query_v2(form_data):
         elif (prop_num == 1 and rel_num == 0) or (prop_num == 0 and rel_num >= 1):
             relation_part = relation_part + " WHERE "
 
-        if prop_num == 0 and rel_num == 0:
-            relation_part = relation_part[:-7]
 
         # aggiornamento del dizionario
         for h in range(prop_num):
