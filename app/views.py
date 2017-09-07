@@ -12,6 +12,7 @@ def send_asset(path):
     return send_from_directory('templates/assets/', path)
 
 
+
 @app.route('/')
 @app.route('/index')
 def index_page():
@@ -36,6 +37,8 @@ def query_page():
                            species=species,
                            relations=relations,
                            message=message)
+
+
 
 
 @app.route('/build_query_v2')
@@ -70,7 +73,11 @@ def executes_query():
     form_data = request.form
     results = form_data['query']
     results=html.unescape(results)
-    query_results=logic.query_db(results)
+    #TEMP
+    #query_results=logic.query_db(results)
+    query_results=logic.query_db("match(n:microRNA {name:'mmu-let-7g-3p'})-[r]->(t) RETURN n,r,t LIMIT 25")
+
+
     #for i in query_results.data():
     #    return render_template("empty.html", query_results=html.unescape(json.dumps(i)))
     #while(query_results.hasNext()):
@@ -79,7 +86,11 @@ def executes_query():
     #    toreturn=toreturn+i.values()
     #return render_template("empty.html", query_results=html.unescape(toreturn))
     #for r in query_results:
-    return render_template("empty.html", query_results=(query_results.data()))
+    #return render_template("empty.html", query_results=(query_results.data()))
+
+
+    return render_template("empty.html", query_results=logic.build_json_from_query_results(query_results))
+    #return render_template("empty.html", query_results=(query_results.keys()))
 
 
 @app.route('/error')

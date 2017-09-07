@@ -15,6 +15,51 @@ def query_db(query):
 
 
 
+def build_json_from_query_results(query_results):
+    #ogni record è composto da (non sempre): una n, una r, una t che sono in keys()
+    emptystr="{ 'data' : {"
+    counter=0    
+    
+    for i in query_results.records():
+
+        emptystr+=" 'record_"+str(counter)+"' : { "
+        
+        for contnrt in range(len(i.keys())):
+            chiave = i.keys()[contnrt]
+
+            properties = i.values()[contnrt].properties
+        
+            if chiave == "n":
+                #is a node
+                nome = i.values()[contnrt].labels        
+            elif chiave == "r":
+                #is a relation
+                nome = i.values()[contnrt].type        
+            elif chiave == "t":
+                #is a target
+                nome = i.values()[contnrt].labels        
+
+            emptystr+=str("'record' : ")
+            emptystr+=str("{ 'result_type' : ")
+            emptystr+=str("'"+str(chiave)+"', ")
+            emptystr+=str("'label' : ")
+            emptystr+=str("'"+str(nome)[2:-2]+"', ")
+            emptystr+=str("'properties' : ")
+            emptystr+=str(properties)
+            emptystr+=str("},")
+            #for each key i have a record
+
+        emptystr=emptystr[0:-1]
+        counter+=1
+        emptystr+="},"
+
+    emptystr=emptystr[0:-1]
+    emptystr+="}"
+    return emptystr[0:-1]
+    
+
+
+
 def transform_entry(entry):
   """
   Turn the given neo4j Node into a dictionary based on the Node's type.
