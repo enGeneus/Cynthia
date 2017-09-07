@@ -211,12 +211,15 @@ def build_and_query_v2(form_data):
     if j['relations'] != []:
         rel_num = (len(j['relations']))
 
+    return_part = " RETURN "
+
     for i in range(len(j['startingNodes'])):
 
         if i != 0:
             query = query + " WITH t "
 
         prop_num = 0
+        relation_part = ""
 
         if j['startingNodes'][i]['properties'] != []:
             prop_num = (len(j['startingNodes'][i]['properties']))
@@ -224,22 +227,16 @@ def build_and_query_v2(form_data):
         relation_part = "MATCH (n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")"
 
         if rel_num > 0:
-            relation_part = relation_part + "-[r" + str(i) + ":PicTar|RNA22]->"
+            relation_part = relation_part + "-[r" + ":PicTar|RNA22]-> (t)"
 
-        # dizionario per le property, indica per ogni proprietà (chiave) quanti valori possiede (valore)
         diz_prop = {}
 
-        relation_part = relation_part + "(t)"
-
-        if rel_num == 0:
-            relation_part = relation_part[:-3]
-
-        if rel_num > 1:
+        if prop_num > 1 or (rel_num > 0 and prop_num > 0):
             relation_part = relation_part + " WHERE ("
-        else:
+        elif (prop_num == 1 and rel_num == 0) or (prop_num == 0 and rel_num >= 1):
             relation_part = relation_part + " WHERE "
 
-        if prop_num == 0:
+        if prop_num == 0 and rel_num == 0:
             relation_part = relation_part[:-7]
 
         # aggiornamento del dizionario
@@ -271,23 +268,32 @@ def build_and_query_v2(form_data):
             if len(diz_prop) > 1 and m != len(diz_prop) - 1:
                 where_part = where_part + ") AND ("
 
-        if prop_num > 1:
+        if prop_num > 1 or (rel_num > 0 and prop_num > 0):
             where_part = where_part + ")"
 
         for a in range(rel_num):
-            if a == 0:
-                where_part = where_part + " AND ("
+            if a == 0 and prop_num > 0:
+                where_part = where_part + " AND "
             if rel_num == 1:
-                where_part = where_part + "r" + str(i) + ".name = '" + j['relations'][a]['relationName'] + "') "
+                where_part = where_part + "(r" + ".name = '" + j['relations'][a]['relationName'] + "')"
 
             if rel_num > 1:
-                where_part = where_part + "r" + str(i) + ".name = '" + j['relations'][a]['relationName'] + "' OR "
+                if a == 0:
+                    where_part = where_part + "("
+                where_part = where_part + "r" + ".name = '" + j['relations'][a]['relationName'] + "' OR "
                 if a == rel_num - 1:
                     where_part = where_part[:-4]
-                    where_part = where_part + ") "
+                    where_part = where_part + ")"
 
         query = query + relation_part + where_part
 
-    query = query + "RETURN t"
+        return_part = return_part + "n" + str(i) + ","
 
-    return query
+    return_part = return_part[:-1]
+
+    if rel_num > 0:
+        return_part = return_part + ",r,t"
+
+    query = query + return_part + " LIMIT 25"
+
+    return(query)
