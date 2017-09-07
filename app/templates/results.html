@@ -82,14 +82,35 @@ var opts = {
 var target = document.getElementById('loading')
 var spinner = new Spinner(opts).spin(target);
     
+    
+var decodeEntities = (function() {
+  // this prevents any overhead from creating the object each time
+  var element = document.createElement('div');
+
+  function decodeHTMLEntities (str) {
+    if(str && typeof str === 'string') {
+      // strip script/html tags
+      str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+      str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+      element.innerHTML = str;
+      str = element.textContent;
+      element.textContent = '';
+    }
+
+    return str;
+  }
+
+  return decodeHTMLEntities;
+})();    
+    
 
 $.post( "executes_query", { query: "{{results}}" })
   .done(function( data ) {
-
-
-  loading.innerHTML = data;
   
-	//querydata = JSON.parse(data.replace("'", "\""));  
+  alert(decodeEntities(data));
+  querydata = JSON.parse(decodeEntities(data));  
+  
+  loading.innerHTML = decodeEntities(data);  
   
 
 //$("#loading").hide();

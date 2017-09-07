@@ -54,8 +54,8 @@ def build_json_from_query_results(query_results):
         emptystr+="},"
 
     emptystr=emptystr[0:-1]
-    emptystr+="}"
-    return emptystr[0:-1]
+    emptystr+="}}}"
+    return emptystr[0:-1].replace("'", '"')
     
 
 

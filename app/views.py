@@ -89,7 +89,7 @@ def executes_query():
     #return render_template("empty.html", query_results=(query_results.data()))
 
 
-    return render_template("empty.html", query_results=logic.build_json_from_query_results(query_results))
+    return render_template("empty.html", query_results=html.unescape(logic.build_json_from_query_results(query_results)))
     #return render_template("empty.html", query_results=(query_results.keys()))
 
 
