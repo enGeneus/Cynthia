@@ -39,7 +39,7 @@ def build_json_from_query_results(query_results):
                 #is a target
                 nome = i.values()[contnrt].labels        
 
-            emptystr+=str("'record' : ")
+            emptystr+=str("'result_"+str(contnrt)+"' : ")
             emptystr+=str("{ 'result_type' : ")
             emptystr+=str("'"+str(chiave)+"', ")
             emptystr+=str("'label' : ")
