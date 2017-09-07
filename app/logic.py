@@ -261,7 +261,7 @@ def build_and_query_v2(form_data):
     for i in range(len(j['startingNodes'])):
 
         if i != 0:
-            query = query + " WITH t "
+            query = query + " WITH t,n" + str(i - 1) + " "
 
         prop_num = 0
         relation_part = ""
