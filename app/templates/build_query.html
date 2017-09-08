@@ -18,6 +18,9 @@
         <link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
         <link rel="stylesheet" href="assets/css/main.css">
 
+        <!-- Cynthia css -->
+        <link rel="stylesheet" href="assets/css/owner.css">
+
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
         <script src="assets/js/html5shiv.js"></script>
@@ -44,11 +47,11 @@
                                 <div class="query-fields">
                                     <div id="species-selection" class="form-group">
                                         <div class="radio">
-                                            <label><input value="*" type="radio" class="form-control" name="species-radio" checked="checked"/>All species</label>
+                                            <label><input value="*" type="radio" name="species-radio" checked="checked"/>All species</label>
                                         </div>
                                         {% for specie in species %}
                                         <div class="radio">
-                                            <label><input value="{{specie}}" type="radio" class="form-control" name="species-radio"/>{{specie}}</label>
+                                            <label><input value="{{specie}}" type="radio" name="species-radio"/>{{specie}}</label>
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -57,17 +60,21 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default relations-panel">
                             <div class="panel-heading">
                                 <div class="panel-title"><span>Relations</span></div>
                             </div>
                             <div class="panel-body">
-                                <div class="query-fields">
+                                <div class="query-fields row">
                                     <div class="form-group">
                                         {% for relation in relations %}
                                         <div class="checkbox relation-selection">
-                                            <label><input class="relation-checkbox" type="checkbox" value="{{relation}}">{{relation}}</label>
-                                            <input class="pull-right cutoff-value" type="text" name="cutoffValue" placeholder="cutoff"/>
+                                            <div class="checkbox col-xs-3">
+                                                <label><input class="relation-checkbox" type="checkbox" value="{{relation}}">{{relation}}</label>
+                                            </div>
+                                            <div class="col-xs-9">
+                                                <input class="form-control input-sm cutoff-value" type="text" name="cutoffValue" placeholder="Cut-off value"/>
+                                            </div>
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -105,7 +112,7 @@
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
-                            <select class="form-control starting-node-select" onchange="javascript:fillPropertyOptions(this)" name="startingNode">
+                            <select class="form-control starting-node-select" onchange="javascript:changeStartingNodeHandler(this)" name="startingNode">
                                 <option value="" disabled selected>Select option</option>
                                 {% for label in node_labels %}
                                 <option value="{{label}}">{{label}}</option>
@@ -130,11 +137,11 @@
                             </a>
                         </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body property-panel">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <span>Property Name</span>
-                                <select class="form-control property-select" name="property">
+                                <select class="form-control property-select" name="property" onchange="javascript:changePropertyHandler(this)">
                                     <option value="" disabled selected>Select option</option>
                                 </select>
                             </div>
@@ -142,10 +149,11 @@
                         <div class="col-md-6">
                             <div class="form-group property-values">
                                 <span>Property value</span>
-                                <br/>
-                                <input type="text" name="propertyValue" placeholder="value"/>
+                                <div class="property-value-wrapper">
+                                    <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
+                                </div>
                             </div>
-                            <a class="btn btn-success btn-sm" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
+                            <a class="btn btn-success btn-sm disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
                                 <i class="fa fa-plus">&nbsp;Add value</i>
                             </a>
                         </div>
@@ -161,6 +169,6 @@
         <script src="assets/js/jQuery.headroom.min.js"></script>
         <script src="assets/js/template.js"></script>
 
-        <script src="assets/js/ajax_utils/build_query.js"></script>
+        <script src="assets/js/owner/build_query.js"></script>
     </body>
 </html>

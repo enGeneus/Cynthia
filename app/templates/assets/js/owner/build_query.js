@@ -1,8 +1,9 @@
 
-var propertyFieldHtml = "<br/><input type=\"text\" name=\"propertyValue\" placeholder=\"value\"/><a class=\"btn btn-danger btn-xs\" style=\"padding: 5px 10px;\" onclick=\"javascript:removePropertyField(this)\"><i class=\"fa fa-times\"></i></a>";
+var propertyFieldHtml = "<div class=\"property-value-wrapper\" hidden><input class=\"form-control input-sm\" type=\"text\" name=\"propertyValue\" placeholder=\"value\"/><a class=\"btn btn-danger btn-xs\" style=\"padding: 5px 10px;\" onclick=\"javascript:removePropertyField(this)\"><i class=\"fa fa-times\"></i></a></div>";
 
 var options = []
 var startingNodes = 0;
+var pageLoaded = false;
 
 $(function(){
 
@@ -24,8 +25,15 @@ $(function(){
 
 function addStartingNode() {
     html_to_add = $("#starting-node_pattern").clone();
-    html_to_add.removeAttr("id"); // Avoid duplicate IDs
+    html_to_add.removeAttr("id").hide(); // Avoid duplicate IDs and hide for further animation
     $("#starting-node-container").append(html_to_add);
+
+    if(pageLoaded) { // If it is the first node append then avoid the slide down animation
+        html_to_add.slideDown();
+    } else {
+        html_to_add.show();
+        pageLoaded = true;
+    }
 
     startingNodes++;
     if (startingNodes > 1) {
@@ -33,7 +41,7 @@ function addStartingNode() {
     }
 }
 
-function fillPropertyOptions(select) {
+function changeStartingNodeHandler(select) {
     var url="/ajax/node_properties";
     var selectedValue = $(select).val();
     var selectedNode_properties;
@@ -55,9 +63,15 @@ function fillPropertyOptions(select) {
         });
     }
 
+    // Empty content
+    $(select).parent().parent().find(".properties-filters").children().each(function(index, object) {
+        $(object).slideUp(function(){
+            $(this).remove();
+        });
+    });
     // Enable add property button
     $(select).parent().parent().find("button").removeClass("disabled");
-    // Query button
+    // Enable Query button
     $("#submit-query").removeClass("disabled");
     // Enable remove starting node button
     $(select).parent().parent().parent().find("a").removeClass("disabled");
@@ -71,17 +85,41 @@ function fillSelectOptions(select, options) {
     }
 }
 
+function changePropertyHandler(select) {
+    var property_panel = $(select).closest(".property-panel")
+    var property_values = property_panel.find(".property-values");
+    var property_values_fields = property_values.find(".property-value-wrapper");
+
+    property_panel.find("a").removeClass("disabled");
+
+    // Check how many fields have been inserted: if it has been inserted only one field, only reset the input
+    if (property_values_fields.length == 1) {
+        property_values_fields.find("input").val("");
+    } else {
+        property_values_fields.each(function(index, object) {
+            $(object).slideUp(function(){
+                $(this).remove();
+            });
+        });
+        $("<div class=\"property-value-wrapper\" hidden><input class=\"form-control input-sm\" type=\"text\" name=\"propertyValue\" placeholder=\"value\"/></div>").appendTo(property_values).fadeIn();
+    }
+}
+
 function removeSelectDisabled() {
     $(".nodePropertySel").removeAttr("disabled");
 }
 
 function removeFilter(button) {
-    $(button).closest(".property-filter").remove();
+    $(button).closest(".property-filter").slideUp(function() {
+        $(this).remove();
+    });
 }
 
 function removeStartingNode(button) {
     if (startingNodes > 1) {
-        $(button).closest(".starting-node-panel").remove();
+        $(button).closest(".starting-node-panel").slideUp(function(){
+            $(this).remove();
+        });
         startingNodes--;
         if (startingNodes == 1) {
             $(".remove-node-button").removeAttr("disabled");
@@ -91,20 +129,23 @@ function removeStartingNode(button) {
 
 function addPropertyFilter(button) {
     html_to_add = $("#filter_pattern").clone();
-    html_to_add.removeAttr("id"); // Avoid duplicate IDs
+    html_to_add.removeAttr("id").hide(); // Avoid duplicate IDs and hide for further animation
     node_type = $(button).parent().parent().find(".starting-node-select").val();
     fillSelectOptions(html_to_add.find("select"), options[node_type]);
     $(button).parent().parent().find(".properties-filters").append(html_to_add);
+
+    html_to_add.slideDown();
 }
 
 function addPropertyField(button) {
-    $(button).parent().children().first().append(propertyFieldHtml);
+    var nodeAppendTo = $(button).parent().children().first(); //.append(propertyFieldHtml);
+    $(propertyFieldHtml).appendTo(nodeAppendTo).slideDown();
 }
 
 function removePropertyField(button) {
-    $(button).prev().prev().remove();
-    $(button).prev().remove();
-    $(button).remove();
+    $(button).closest(".property-value-wrapper").slideUp(function(){
+        $(this).remove();
+    });
 }
 
 function serializeFormToJSON() {
