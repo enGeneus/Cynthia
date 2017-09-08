@@ -1,0 +1,14 @@
+div.relation-selection {
+    display: block;
+    margin-bottom: 25px;
+}
+
+div.relation-selection input.cutoff-value {
+    margin-top: 6px;
+}
+
+div.relations-panel .panel-body {
+    padding-top: 5px;
+}
+
+
