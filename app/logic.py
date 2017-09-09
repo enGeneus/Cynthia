@@ -165,7 +165,11 @@ def build_query(form_data):
     for i in range(len(j['startingNodes'])):
 
         if i != 0:
-            query = query + " WITH t,"
+            if rel_num != 0:
+                query = query + " WITH t,"
+            else:
+                query = query + " WITH "
+
             for m in range(i):
                 query = query + "n" + str(m) + ","
                 if m == i - 1:
