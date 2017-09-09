@@ -34,8 +34,17 @@ $.ajax("/execute_query", {
 });
 
 function buildResultGraph(data) {
+	
 
-    querydata = JSON.parse(decodeEntities(data));
+	 try {
+	    querydata = JSON.parse(decodeEntities(data));
+	 }
+	 catch(noresults) {
+   	         $("#loading-text").text("No results found. ");
+   	         $("#loading-text").append("<a href='javascript:history.back(-1);'>Try Again</a>");
+   	         $("#cy").hide();
+   	         $("#loading-loader").hide();
+	 }     
     querydata = querydata.data;
     $("#resultData").html(decodeEntities(data));
 
@@ -46,8 +55,9 @@ function buildResultGraph(data) {
 
     while(true) {
         record = querydata["record_"+counter_record];
-        if(record==null)
+        if(record==null) {
             break;
+        }
         thisnodename="";
         thisrelname="";
         thistargetname="";
@@ -118,7 +128,7 @@ function buildResultGraph(data) {
             }
         }
         counter_record++;
-    }
+    }   
 
     var cy = cytoscape({
         container: document.querySelector('#cy'),
