@@ -4,6 +4,7 @@ from flask import render_template, send_from_directory, request, jsonify
 from app import app
 from app import logic
 import neo4j
+import html
 
 
 @app.route('/assets/<path:path>')
@@ -48,8 +49,8 @@ def query_handler():
 def executes_query():
     form_data = request.form
     query = form_data['query']
-    #query_results=logic.query_db(query)
-    query_results=logic.query_db("match(n:microRNA {name:'mmu-let-7g-3p'})-[r]->(t) RETURN n,r,t LIMIT 25")
+    query_results=logic.query_db(html.unescape(query))
+    #query_results=logic.query_db("match(n:microRNA {name:'mmu-let-7g-3p'})-[r]->(t) RETURN n,r,t LIMIT 25")
     result_json = logic.build_json_from_query_results(query_results)
     return result_json
 

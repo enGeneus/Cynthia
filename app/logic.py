@@ -19,7 +19,6 @@ def build_json_from_query_results(query_results):
     #ogni record è composto da (non sempre): una n, una r, una t che sono in keys()
     emptystr="{ 'data' : {"
     counter=0    
-    
     for i in query_results.records():
 
         emptystr+=" 'record_"+str(counter)+"' : { "
@@ -28,20 +27,21 @@ def build_json_from_query_results(query_results):
             chiave = i.keys()[contnrt]
 
             properties = i.values()[contnrt].properties
-        
-            if chiave == "n":
+
+            #0:1 because it can be n0, n1..
+            if chiave[0:1] == "n":
                 #is a node
                 nome = i.values()[contnrt].labels        
-            elif chiave == "r":
+            elif chiave[0:1] == "r":
                 #is a relation
                 nome = i.values()[contnrt].type        
-            elif chiave == "t":
+            elif chiave[0:1] == "t":
                 #is a target
                 nome = i.values()[contnrt].labels        
 
             emptystr+=str("'result_"+str(contnrt)+"' : ")
             emptystr+=str("{ 'result_type' : ")
-            emptystr+=str("'"+str(chiave)+"', ")
+            emptystr+=str("'"+str(chiave[0:1])+"', ")
             emptystr+=str("'label' : ")
             emptystr+=str("'"+str(nome)[2:-2]+"', ")
             emptystr+=str("'properties' : ")

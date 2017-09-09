@@ -34,6 +34,7 @@ $.ajax("/execute_query", {
 });
 
 function buildResultGraph(data) {
+
     querydata = JSON.parse(decodeEntities(data));
     querydata = querydata.data;
     $("#resultData").html(decodeEntities(data));
