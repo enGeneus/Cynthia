@@ -202,23 +202,10 @@ function buildResultGraph(data) {
         layout: {
    name: 'cola',
     infinite: false,
-    fit: false
+    fit: true
         }
     });
 
-    cy.on('tap', 'node', function(e){
-        var node = e.cyTarget;
-        var neighborhood = node.neighborhood().add(node);
-        cy.elements().addClass('faded');
-        neighborhood.removeClass('faded');
-    });
-
-    cy.on('tap', function(e){
-        if( e.cyTarget === cy ){
-            cy.elements().removeClass('faded');
-        }
-    });
-   
    
 demoNodesAddedName=new Array();
 for(i=0; i<demoNodes.length; i++) {
