@@ -115,23 +115,25 @@ def get_node_properties_keys(node_type):
     return property_list
 
 
-def get_node_relations(node_type, property_key, property_value):
-    query = "MATCH (n:{type:s})-[r]->() WHERE n.{key:s}='{value:s}' RETURN type(r) as relations"\
-        .format(**{'type': node_type, 'key': property_key, 'value': property_value})
+def get_node_labels():
+    query = "MATCH (n:Node_info) RETURN n.name "
     result = query_db(query)
-    result_list = []
+    label_list = []
     for record in result:
-        result_list.append(record["relations"])
-    return result_list
+        if record["n.name"] == "microRNA":
+            label_list.append(record["n.name"])
+    return label_list
 
 
-def get_name_of_relations_on_relation_general_info():
-    query = "MATCH (a:Relation_general_info) RETURN a.name as name"
+def get_node_properties_keys(node_type):
+    query = "MATCH (n:{type:s}) RETURN distinct keys(n) as propertyKeys".format(**{'type': node_type})
     result = query_db(query)
-    result_list = []
+    property_list = []
     for record in result:
-        result_list.append(record["name"])
-    return result_list
+        for key in record["propertyKeys"]:
+            if key not in property_list and key != "species":
+                property_list.append(key)
+    return property_list
 
 
 def get_node_whit_common_relation(node_type, relation_type, node_name):
