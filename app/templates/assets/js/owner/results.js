@@ -1,3 +1,77 @@
+var filterEntities = (function(entityType) {
+	
+	 var demoNodesTemp = [];
+    var demoEdgesTemp = [];
+	
+
+	if(entityType == "all") {//show all results
+	
+		var collection = cyd.elements("node[weight > 0]");
+		cyd.remove( collection );
+		
+		cyd.add(demoNodes);
+		cyd.add(demoEdges);
+		
+		var layout = cyd.layout({
+   			name: 'cola',
+   		   infinite: false,
+    			fit: true
+		});
+		layout.run();
+	
+	}
+	else if(entityType == "best_score") {//if multiple relations between nodes and target, show only the best score relation
+	
+		for(i=0; i<demoNodes.length; i++) {
+		
+				
+			for(j=0; j<demoNodes.length; j++) {			
+						
+			
+				var edgesSelected=cyd.edges("[source='"+demoNodes[i].data.id+"']");
+				edgesSelected = edgesSelected.edges("[target='"+demoNodes[j].data.id+"']");
+
+				if(edgesSelected.length<=1)
+					continue;			
+			
+				var maximumValue = 99999999;
+				var maximumLabel = "";
+
+				for(k=0; k<edgesSelected.length; k++) {
+					//lower is better (?)
+					if(edgesSelected[k].data().score < maximumValue) {
+						maximumValue = edgesSelected[k].data().score;	
+						maximumLabel = edgesSelected[k].data().label;													
+					}
+				}	
+				
+				var collectionToRemove=cyd.edges("[source='"+demoNodes[i].data.id+"']");
+				collectionToRemove = collectionToRemove.edges("[target='"+demoNodes[j].data.id+"']");
+				cyd.remove( collectionToRemove );
+				
+				var collectionToAdd = cyd.add([{ group: "edges", data: { source: demoNodes[i].data.id, target: demoNodes[j].data.id, score: maximumValue, label: maximumLabel }, classes: "autorotate"  } ]);
+				
+
+							
+			}
+		}	
+		
+		var layout = cyd.layout({
+   			name: 'cola',
+   		   infinite: false,
+    			fit: true
+		});
+		layout.run();
+	
+	}
+
+
+});
+	
+	 var cyd;
+    var demoNodes = [];
+    var demoEdges = [];
+
 var decodeEntities = (function() {
     // this prevents any overhead from creating the object each time
     var element = document.createElement('div');
@@ -44,6 +118,14 @@ function replaceAll(str, find, replace) {
 
 function buildResultGraph(data) {
 
+
+
+    $('#config-toggle').on('click', function(){
+      $('body').toggleClass('config-closed');
+
+      cy.resize();
+    });
+
 	 try {
 	    querydata = JSON.parse(decodeEntities(data));
 	 }
@@ -58,8 +140,7 @@ function buildResultGraph(data) {
 
     counter_record=0;
 
-    var demoNodes = [];
-    var demoEdges = [];
+
 	
     var demoNodesNames = new Array();
 
@@ -155,7 +236,7 @@ function buildResultGraph(data) {
         counter_record++;
     }   
 
-    var cy = cytoscape({
+    cyd = cytoscape({
         container: document.querySelector('#cy'),
         boxSelectionEnabled: false,
         autounselectify: true,
@@ -173,7 +254,7 @@ function buildResultGraph(data) {
 
         }).selector('edge').css({
             'curve-style': 'bezier',
-            'font-size': '12px',
+            'font-size': '8px',
             'target-arrow-shape': 'triangle',
             'target-arrow-color': '#888',
             'line-color': '#888',
@@ -200,9 +281,9 @@ function buildResultGraph(data) {
         },
 
         layout: {
-   name: 'cola',
-    infinite: false,
-    fit: true
+   			name: 'cola',
+   		   infinite: false,
+    			fit: true
         }
     });
 
@@ -227,7 +308,7 @@ for(i=0; i<demoNodes.length; i++) {
 
 	demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
    
-	cy.$('#'+demoNodes[i].data.id).qtip({
+	cyd.$('#'+demoNodes[i].data.id).qtip({
   		content: thiscontent,
   		position: {
     		my: 'top center',

@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
         <link rel="stylesheet" href="assets/css/main.css">
         <link rel="stylesheet" href="assets/css/jquery.qtip.min.css">
+        <link rel="stylesheet" href="assets/css/graph-bar.css">
 
         <link href="assets/css/style-graph.css" rel="stylesheet">
 
@@ -54,7 +55,7 @@
     <body>
         <section class="container">
             <div id="loading-message">
-                <h1 id="loading-text">Caricamento risultati in corso...</h1>
+                <h1 id="loading-text">Your results are loading...</h1>
                 <div class="loader" id="loading-loader"></div>
             </div>
             <div id="results">
@@ -79,6 +80,26 @@
 
         <script src="assets/js/owner/build_query.js"></script>
         <script src="assets/js/owner/results.js"></script>
+
+    <span class="fa fa-bars config-toggle" id="config-toggle"></span>
+
+    <div id="config" class="config">
+
+      <div class="preamble">
+        <span class="label"><img src='/assets/images/logo.png'></span>
+
+        <p>These are your results. Feel free to Filter them and adjust your Results.</p>
+		<p></p>
+		<p>Filter By:</p>
+			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('all');">All Results</span><br>
+			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('best_score');">Best Score</span><br>
+ 
+      </div>
+
+    </div>
+
+
+
 
     </body>
 </html>
