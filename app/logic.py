@@ -100,7 +100,8 @@ def get_node_labels():
     result = query_db(query)
     label_list = []
     for record in result:
-        label_list.append(record["n.name"])
+        if record["n.name"] == "microRNA":
+            label_list.append(record["n.name"])
     return label_list
 
 
@@ -110,7 +111,7 @@ def get_node_properties_keys(node_type):
     property_list = []
     for record in result:
         for key in record["propertyKeys"]:
-            if key not in property_list:
+            if key not in property_list and key != "species":
                 property_list.append(key)
     return property_list
 
@@ -232,12 +233,22 @@ def build_query(form_data):
             if a == 0 and prop_num > 0:
                 where_part = where_part + " AND "
             if rel_num == 1:
-                where_part = where_part + "(r"+str(i)+ ".name = '" + j['relations'][a]['relationName'] + "')"
+                where_part = where_part + "(r"+str(i)+ ".name = '" + j['relations'][a]['relationName']+ "'"
+
+                if j['relations'][a]['cutoffValue'] != "" :
+                    where_part =  where_part +" AND r"+str(i)+ ".score > '"+ j['relations'][a]['cutoffValue']+"')"
+                else :
+                    where_part = where_part +")"
 
             if rel_num > 1:
                 if a == 0:
                     where_part = where_part + "("
-                where_part = where_part + "r"+str(i) + ".name = '" + j['relations'][a]['relationName'] + "' OR "
+
+                if j['relations'][a]['cutoffValue'] == "" :
+                    where_part = where_part + "r"+str(i) + ".name = '" + j['relations'][a]['relationName'] + "' OR "
+                else:
+                    where_part = where_part + "(r"+str(i) + ".name = '" + j['relations'][a]['relationName'] + "' AND r"+str(i)+ ".score > '"+ j['relations'][a]['cutoffValue']+"')"+" OR "
+
                 if a == rel_num - 1:
                     where_part = where_part[:-4]
                     where_part = where_part + ")"
@@ -256,6 +267,12 @@ def build_query(form_data):
     if rel_num > 0:
         return_part = return_part + ",t"
 
-    query = query + return_part + " LIMIT 500"
+    if j["limit"] == 0 :
+        query = query + return_part
+
+    elif j["limit"] == -1 :
+        query = query + return_part + " LIMIT 25"
+    else:
+        query = query + return_part + " LIMIT " + str(j["limit"])
 
     return(query)

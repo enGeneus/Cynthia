@@ -247,8 +247,11 @@ function serializeFormToJSON() {
     //Add limit
     json = json + " \"limit\": ";
     limit_val = $("#limit-select").val();
-    if (limit_val=="No limit" || limit_val==null) {
+    if (limit_val=="No limit"){
         limit_val=0;
+    }
+    if (limit_val==null){
+        limit_val=-1;
     }
     json = json + limit_val;
 
