@@ -162,28 +162,26 @@ function serializeFormToJSON() {
                 var propertyName = $(object).find(".property-select").val();
                 if (propertyName != null) {
                     property_added = true;
-                    var property_name_wrote = false;
                     var value_added = false;
                     $(object).find(".property-values input").each(function (index, object) {
                         if ($(object).val() != "") {
-                            if(!property_name_wrote) {
+                            if(!value_added) {
                                 json = json + "{\"name\": \"" + propertyName + "\", \"values\": [";
-                                property_name_wrote = true;
+                                value_added = true;
                             }
                             json = json + "\"" + $(object).val() + "\",";
-                            value_added = true;
                         }
                     });
-                    // Remove last comma
                     if (value_added) {
+                        // Remove last comma
                         json = json.slice(0, -1);
+                        // Close values array and property json object
+                        json = json + "]},";
                     }
-                    // Close values array and property json object
-                    json = json + "]},"
                 }
             });
             // Remove last comma
-            if (property_added) {
+            if (json.slice(-1)==",") {
                 json = json.slice(0, -1);
             }
             // Close properties array and starting node object
@@ -221,6 +219,6 @@ function serializeFormToJSON() {
 
     // Close json object
     json = json + "}";
-
+    alert(json);
     return json
 }
