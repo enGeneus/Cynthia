@@ -60,6 +60,8 @@ function buildResultGraph(data) {
 
     var demoNodes = [];
     var demoEdges = [];
+	
+    var demoNodesNames = new Array();
 
     while(true) {
         record = querydata["record_"+counter_record];
@@ -86,6 +88,19 @@ function buildResultGraph(data) {
                 accession = properties.accession;
                 mirbase_link = properties.mirbase_link;
 
+					isPresent=false;
+					for(j=0; j<demoNodesNames.length; j++)
+						if(thisnodename == demoNodesNames[j]) {
+							isPresent=true;
+							break;//already added   
+						}
+					if(isPresent==true) {
+						i++;
+						continue;					
+					}
+	
+					demoNodesNames[demoNodesNames.length]=thisnodename;	
+	
                 demoNodes.push({
                     data: {
                         id: thisnodename,
@@ -154,7 +169,7 @@ function buildResultGraph(data) {
             'color': 'black',
             'background-color': 'data(faveColor)',
             'text-outline-width': 0,
-            'text-outline-color': 'black'
+            'text-outline-color': '#888'
 
         }).selector('edge').css({
             'curve-style': 'bezier',
@@ -185,8 +200,9 @@ function buildResultGraph(data) {
         },
 
         layout: {
-            name: 'grid',
-            padding: 10
+   name: 'cola',
+    infinite: false,
+    fit: false
         }
     });
 
