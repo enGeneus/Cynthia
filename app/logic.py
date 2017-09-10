@@ -173,7 +173,7 @@ def build_query(form_data):
             for m in range(i):
                 query = query + "n" + str(m) +","
                 if rel_num > 0:
-                    query = query + ",r" + str(m) + ","
+                    query = query + "r" + str(m) + ","
                 if m == i - 1:
                     query = query[:-1] + " "
 
@@ -249,13 +249,13 @@ def build_query(form_data):
         return_part = return_part + "n" + str(i)+","
 
         if rel_num > 0 :
-            return_part = return_part + ",r"+str(i)+","
+            return_part = return_part + "r"+str(i)+","
 
     return_part = return_part[:-1]
 
     if rel_num > 0:
         return_part = return_part + ",t"
 
-    query = query + return_part + " LIMIT 25"
+    query = query + return_part + " LIMIT 500"
 
     return(query)
