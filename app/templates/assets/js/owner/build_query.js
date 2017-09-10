@@ -1,7 +1,5 @@
-
-var propertyFieldHtml = "<div class=\"property-value-wrapper\" hidden><input class=\"form-control input-sm\" type=\"text\" name=\"propertyValue\" placeholder=\"value\"/><a class=\"btn btn-danger btn-xs\" style=\"padding: 5px 10px;\" onclick=\"javascript:removePropertyField(this)\"><i class=\"fa fa-times\"></i></a></div>";
-
-var options = []
+var node_options = [];
+var changing_element;
 var startingNodes = 0;
 var pageLoaded = false;
 
@@ -18,6 +16,12 @@ $(function(){
             $("#serializedForm").submit();
         } else {
             alert("Error: you have to select at least one starting node");
+        }
+    });
+
+    $("#limit-select").change(function(e) {
+        if($(this).val()=="No limit") {
+            alert("Warning! Selecting no limit for the query, the search may take long time and results can be inaccessible!")
         }
     });
 
@@ -42,26 +46,7 @@ function addStartingNode() {
 }
 
 function changeStartingNodeHandler(select) {
-    var url="/ajax/node_properties";
     var selectedValue = $(select).val();
-    var selectedNode_properties;
-
-    if (!(selectedValue in options)) {
-        // Load properties
-        $.ajax(url, {
-            method: "GET",
-            data: {
-                "nodeType": selectedValue
-            },
-            dataType: "json",
-            success: function(response) {
-                options[selectedValue] = response;
-            },
-            error: function(xhr) {
-                alert("Error " + xhr.status);
-            }
-        });
-    }
 
     // Empty content
     $(select).parent().parent().find(".properties-filters").children().each(function(index, object) {
@@ -86,6 +71,7 @@ function fillSelectOptions(select, options) {
 }
 
 function changePropertyHandler(select) {
+    var node_type = $(select).closest(".starting-node-panel").find(".starting-node-select").val();
     var property_panel = $(select).closest(".property-panel")
     var property_values = property_panel.find(".property-values");
     var property_values_fields = property_values.find(".property-value-wrapper");
@@ -101,8 +87,14 @@ function changePropertyHandler(select) {
                 $(this).remove();
             });
         });
-        $("<div class=\"property-value-wrapper\" hidden><input class=\"form-control input-sm\" type=\"text\" name=\"propertyValue\" placeholder=\"value\"/></div>").appendTo(property_values).fadeIn();
+        var html_to_add = $("#property-value-pattern").clone();
+        html_to_add.removeAttr("id").hide().find("a").remove(); // Avoid duplicate IDs and hide for further animation
+        $(html_to_add).appendTo(property_values).fadeIn();
     }
+}
+
+function savePreviousSelected(select) {
+    changing_element = $(select).val();
 }
 
 function removeSelectDisabled() {
@@ -122,7 +114,7 @@ function removeStartingNode(button) {
         });
         startingNodes--;
         if (startingNodes == 1) {
-            $(".remove-node-button").removeAttr("disabled");
+            $(".remove-node-button").addClass("disabled");
         }
     }
 }
@@ -130,16 +122,51 @@ function removeStartingNode(button) {
 function addPropertyFilter(button) {
     html_to_add = $("#filter_pattern").clone();
     html_to_add.removeAttr("id").hide(); // Avoid duplicate IDs and hide for further animation
-    node_type = $(button).parent().parent().find(".starting-node-select").val();
-    fillSelectOptions(html_to_add.find("select"), options[node_type]);
-    $(button).parent().parent().find(".properties-filters").append(html_to_add);
+    $(button).closest(".starting-node-panel").find(".properties-filters").append(html_to_add);
+    node_type = $(button).closest(".starting-node-panel").find(".starting-node-select").val();
 
-    html_to_add.slideDown();
+    if (!(node_type in node_options)) {
+        var url="/ajax/node_properties";
+
+        // Show loading message and lock some functions
+        $(button).addClass("disabled");
+        $("#add-starting-node").addClass("disabled");
+        $(button).parent().siblings(".loader-wrapper").removeClass("hidden");
+        $(button).parent().css("top", "-1px");
+
+        // Load properties
+        $.ajax(url, {
+            method: "GET",
+            data: {
+                "nodeType": node_type
+            },
+            dataType: "json",
+            success: function(response) {
+                node_options[node_type] = response;
+                fillSelectOptions(html_to_add.find("select"), node_options[node_type]);
+                $(button).parent().siblings(".loader-wrapper").addClass("hidden");
+                $(button).removeClass("disabled");
+                $("#add-starting-node").removeClass("disabled");
+                $(button).parent().css("top", "0");
+                html_to_add.slideDown();
+            },
+            error: function(xhr) {
+                alert("Error " + xhr.status);
+            }
+        });
+    } else {
+        fillSelectOptions(html_to_add.find("select"), node_options[node_type]);
+        html_to_add.slideDown();
+    }
 }
 
 function addPropertyField(button) {
-    var nodeAppendTo = $(button).parent().children().first(); //.append(propertyFieldHtml);
-    $(propertyFieldHtml).appendTo(nodeAppendTo).slideDown();
+    html_to_add = $("#property-value-pattern").clone().hide();
+    html_to_add.removeAttr("id"); // Avoid duplicate IDs and hide for further animation
+    var nodeAppendTo = $(button).parent().children(".property-values"); //.append(html_to_add);
+    console.log(nodeAppendTo);
+    $(html_to_add).appendTo(nodeAppendTo);
+    $(html_to_add).slideDown();
 }
 
 function removePropertyField(button) {
@@ -215,7 +242,15 @@ function serializeFormToJSON() {
     if (added_relations) {
         json = json.slice(0, -1);
     }
-    json = json + "]";
+    json = json + "],";
+
+    //Add limit
+    json = json + " \"limit\": ";
+    limit_val = $("#limit-select").val();
+    if (limit_val=="No limit" || limit_val==null) {
+        limit_val=0;
+    }
+    json = json + limit_val;
 
     // Close json object
     json = json + "}";
