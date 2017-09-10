@@ -33,8 +33,16 @@ $.ajax("/execute_query", {
 
 });
 
+function escapeRegExp(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+
 function buildResultGraph(data) {
-	
 
 	 try {
 	    querydata = JSON.parse(decodeEntities(data));
@@ -61,11 +69,12 @@ function buildResultGraph(data) {
         thisnodename="";
         thisrelname="";
         thistargetname="";
-
-        for(i=0; i<3; i++) {
+		  i=0;
+		  
+        while(true) {
             result = record["result_"+i];
             if(result == null)
-                continue;
+                break;
             result_type = result.result_type;
             label = result.label;
 
@@ -94,9 +103,9 @@ function buildResultGraph(data) {
             }
             else if(result_type == "r") {//is a relation
                 score = properties.score;
-                source_microrna = properties.source_microrna;
+                source_microrna = replaceAll(properties.source_microrna, '_', '-');
                 thisrelname = properties.name;
-                source_target = properties.source_target;
+                source_target = replaceAll(properties.source_target, '_', '-');
                 demoEdges.push({
                     data: {
                         source: source_microrna,
@@ -114,8 +123,8 @@ function buildResultGraph(data) {
                 thistargetname = properties.name;
                 demoNodes.push({
                     data: {
-                        id: thistargetname,
-                        name:thistargetname,
+                        id:ens_code,
+                        name:ens_code,
                         nodetype:"target",
                         species:species,
                         ens_code:ens_code,
@@ -126,6 +135,7 @@ function buildResultGraph(data) {
                     }
                 });
             }
+            i++;
         }
         counter_record++;
     }   
