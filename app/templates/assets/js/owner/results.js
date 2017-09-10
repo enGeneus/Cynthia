@@ -95,7 +95,7 @@ function buildResultGraph(data) {
                         mirbase_link:mirbase_link,
                         species:species,
                         weight:50,
-                        faveColor: "#0000BB",
+                        faveColor: "#68BDF6",
                         faveShape: "ellipse"
                     }
                 });
@@ -110,7 +110,7 @@ function buildResultGraph(data) {
                     data: {
                         source: source_microrna,
                         target: source_target,
-                        label: thisrelname,
+                        label: thisrelname+' - Score: '+score,
                         score: score
                     },
                     classes: 'autorotate'
@@ -130,7 +130,7 @@ function buildResultGraph(data) {
                         ens_code:ens_code,
                         geneid: geneid,
                         weight:50,
-                        faveColor: "#00BB00",
+                        faveColor: "#6DCE9E",
                         faveShape: "ellipse"
                     }
                 });
@@ -150,16 +150,18 @@ function buildResultGraph(data) {
             'shape': 'data(faveShape)',
             'content': 'data(name)',
             'text-valign': 'center',
-            'color': 'white',
+            'font-size': '12px',
+            'color': 'black',
             'background-color': 'data(faveColor)',
-            'text-outline-width': 2,
-            'text-outline-color': '#000'
+            'text-outline-width': 0,
+            'text-outline-color': 'black'
 
         }).selector('edge').css({
             'curve-style': 'bezier',
+            'font-size': '12px',
             'target-arrow-shape': 'triangle',
-            'target-arrow-color': '#044',
-            'line-color': '#044',
+            'target-arrow-color': '#888',
+            'line-color': '#888',
             'width': 1,
             'label': 'data(label)'
 
@@ -237,8 +239,6 @@ for(i=0; i<demoNodes.length; i++) {
   		}
 	});  
 }  
-
-
 
 
     
