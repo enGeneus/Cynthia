@@ -171,7 +171,9 @@ def build_query(form_data):
                 query = query + " WITH "
 
             for m in range(i):
-                query = query + "n" + str(m) +",r"+str(m)+","
+                query = query + "n" + str(m) +","
+                if rel_num > 0:
+                    query = query + ",r" + str(m) + ","
                 if m == i - 1:
                     query = query[:-1] + " "
 
@@ -242,7 +244,12 @@ def build_query(form_data):
 
         query = query + relation_part + where_part
 
-        return_part = return_part + "n" + str(i) + ",r"+str(i)+","
+
+
+        return_part = return_part + "n" + str(i)+","
+
+        if rel_num > 0 :
+            return_part = return_part + ",r"+str(i)+","
 
     return_part = return_part[:-1]
 
