@@ -1,3 +1,8 @@
+section.page-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
 div.relation-selection {
     display: block;
     margin-bottom: 25px;
@@ -11,4 +16,75 @@ div.relations-panel .panel-body {
     padding-top: 5px;
 }
 
+div.add-property-button,
+div.add-property-button div {
+    display: inline-block;
+    position:relative;
+}
 
+div.loader-wrapper {
+    padding-left: 20px;
+    top: 8px;
+}
+
+.loader-small {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #3498db; /* Blue */
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    animation: spin 2s linear infinite;
+}
+
+.loader-big {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+    animation: spin 2s linear infinite;
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#loading-message h1 {
+    width: 100%;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+div.property-value-wrapper .input-wrapper {
+    width: 70%;
+}
+
+div.property-value-wrapper {
+    margin-top: 5px;
+    margin-bottmo: 5px;
+}
+
+a.btn-custom {
+    display: inline-block;
+    margin-top: 2px;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 4px 8px;
+    font-size: 10px;
+    line-height: 1.5;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none
+}

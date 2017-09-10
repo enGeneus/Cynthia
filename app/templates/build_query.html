@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <meta name="viewport"    content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
-        <meta name="author" content="lolli" >
 
         <title>Cynthia</title>
 
@@ -26,10 +25,13 @@
         <script src="assets/js/html5shiv.js"></script>
         <script src="assets/js/respond.min.js"></script>
         <![endif]-->
+
     </head>
     <body>
+        <section class="container page-title">
+            <h1>Cynthia<small> - BUILD QUERY</small></h1>
+        </section>
         <section class="container">
-            <h1>Query page</h1>
             {% if message and message.get('type')=='error' and message.get('message')=='NO_CONN' %}
             <div class="alert alert-danger">
                 <strong>Error:</strong> Cynthia was not able to connect to the database, please check your connection and retry
@@ -38,7 +40,33 @@
             <form action="/results" method="post" id="query-form">
                 <div class="row">
                     <div id="starting-node-container"></div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
+                        <div class="form-group pull-left">
+                                <a id="add-starting-node" class="btn btn-info" onclick="javascript:addStartingNode()"><i class="fa fa-plus"></i>&nbsp;Add starting node</a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <div class="panel-title"><span>Limit search</span></div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <select id="limit-select" class="form-control" name="limitSelect">
+                                        <option value="" disabled selected>Select option</option>
+                                        <option>No limit</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                        <option>100</option>
+                                        <option>250</option>
+                                        <option>500</option>
+                                        <option>1000</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <div class="panel-title"><span>Species</span></div>
@@ -69,10 +97,10 @@
                                     <div class="form-group">
                                         {% for relation in relations %}
                                         <div class="checkbox relation-selection">
-                                            <div class="checkbox col-xs-3">
+                                            <div class="checkbox col-xs-4">
                                                 <label><input class="relation-checkbox" type="checkbox" value="{{relation}}">{{relation}}</label>
                                             </div>
-                                            <div class="col-xs-9">
+                                            <div class="col-xs-8">
                                                 <input class="form-control input-sm cutoff-value" type="text" name="cutoffValue" placeholder="Cut-off value"/>
                                             </div>
                                         </div>
@@ -84,10 +112,10 @@
                     </div>
                     <div class="col-md-12 buttons">
                         <div class="form-group pull-left">
-                            <a id="add-starting-node" class="btn btn-success" onclick="javascript:addStartingNode()"><i class="fa fa-plus"></i>&nbsp;Add starting node</a>
+                            <a id="back" class="btn btn-default" href="/"><i class="fa fa-sign-out fa-flip-horizontal"></i>&nbsp;Exit</a>
                         </div>
                         <div class="form-group pull-right">
-                            <a id="submit-query" class="btn btn-default disabled">Query!</a>
+                            <a id="submit-query" class="btn btn-success disabled">Submit query&nbsp;<i class="fa fa-paper-plane"></i></a>
                         </div>
                     </div>
                 </div>
@@ -105,7 +133,7 @@
                     <div class="panel-heading row">
                         <div class="panel-title pull-left"><span>Starting node</span></div>
                         <div class="input-group pull-right">
-                            <a class="btn btn-danger btn-xs" style="padding: 5px 10px;" title="Remove" onclick="javascript:removeStartingNode(this)">
+                            <a class="btn btn-danger btn-xs remove-node-button remove-node-button disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:removeStartingNode(this)">
                                 <i class="fa fa-times"></i>
                             </a>
                         </div>
@@ -120,8 +148,15 @@
                             </select>
                         </div>
                         <div class="properties-filters"></div>
-                        <div class="form-group pull-left buttons">
-                            <a class="btn btn-warning add-property-filter disabled" onclick="javascript:addPropertyFilter(this)"><i class="fa fa-plus"></i>&nbsp;Add property</a>
+                        <div class="pull-left buttons add-property-button">
+                            <div class="button-wrapper">
+                                <a class="btn btn-warning add-property-filter disabled" onclick="javascript:addPropertyFilter(this)">
+                                    <i class="fa fa-plus"></i>&nbsp;Add property
+                                </a>
+                            </div>
+                            <div class="loader-wrapper hidden">
+                                <div class="loader-small"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,7 +176,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <span>Property Name</span>
-                                <select class="form-control property-select" name="property" onchange="javascript:changePropertyHandler(this)">
+                                <select class="form-control property-select" name="property" onfocus="javascript:savePreviousSelected(this)" onchange="javascript:changePropertyHandler(this)">
                                     <option value="" disabled selected>Select option</option>
                                 </select>
                             </div>
@@ -149,17 +184,29 @@
                         <div class="col-md-6">
                             <div class="form-group property-values">
                                 <span>Property value</span>
-                                <div class="property-value-wrapper">
-                                    <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
+                                <div class="property-value-wrapper row">
+                                    <div class="col-md-8">
+                                        <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
+                                    </div>
                                 </div>
                             </div>
-                            <a class="btn btn-success btn-sm disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
+                            <a class="btn btn-info btn-sm disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
                                 <i class="fa fa-plus">&nbsp;Add value</i>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div id="property-value-pattern" class="property-value-wrapper row">
+                <div class="col-md-8">
+                    <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
+                </div>
+                <a class="btn-custom btn-danger" onclick="javascript:removePropertyField(this)">
+                    <i class="fa fa-times"></i>
+                </a>
+            </div>
+
 
         </section>
 
