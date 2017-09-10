@@ -171,7 +171,7 @@ def build_query(form_data):
                 query = query + " WITH "
 
             for m in range(i):
-                query = query + "n" + str(m) + ","
+                query = query + "n" + str(m) +",r"+str(m)+","
                 if m == i - 1:
                     query = query[:-1] + " "
 
@@ -184,7 +184,7 @@ def build_query(form_data):
         relation_part = "MATCH (n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")"
 
         if rel_num > 0:
-            relation_part = relation_part + "-[r" + ":PicTar|RNA22]-> (t)"
+            relation_part = relation_part + "-[r"+str(i)+ ":PicTar|RNA22]-> (t)"
 
         diz_prop = {}
 
@@ -230,24 +230,24 @@ def build_query(form_data):
             if a == 0 and prop_num > 0:
                 where_part = where_part + " AND "
             if rel_num == 1:
-                where_part = where_part + "(r" + ".name = '" + j['relations'][a]['relationName'] + "')"
+                where_part = where_part + "(r"+str(i)+ ".name = '" + j['relations'][a]['relationName'] + "')"
 
             if rel_num > 1:
                 if a == 0:
                     where_part = where_part + "("
-                where_part = where_part + "r" + ".name = '" + j['relations'][a]['relationName'] + "' OR "
+                where_part = where_part + "r"+str(i) + ".name = '" + j['relations'][a]['relationName'] + "' OR "
                 if a == rel_num - 1:
                     where_part = where_part[:-4]
                     where_part = where_part + ")"
 
         query = query + relation_part + where_part
 
-        return_part = return_part + "n" + str(i) + ","
+        return_part = return_part + "n" + str(i) + ",r"+str(i)+","
 
     return_part = return_part[:-1]
 
     if rel_num > 0:
-        return_part = return_part + ",r,t"
+        return_part = return_part + ",t"
 
     query = query + return_part + " LIMIT 25"
 
