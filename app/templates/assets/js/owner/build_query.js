@@ -162,10 +162,13 @@ function serializeFormToJSON() {
                 var propertyName = $(object).find(".property-select").val();
                 if (propertyName != null) {
                     property_added = true;
-                    json = json + "{\"name\": \"" + propertyName + "\", \"values\": [";
+                    property_name_wrote = false;
                     var value_added = false;
                     $(object).find(".property-values input").each(function (index, object) {
                         if ($(object).val() != "") {
+                            if(!property_name_wrote) {
+                                json = json + "{\"name\": \"" + propertyName + "\", \"values\": [";
+                            }
                             json = json + "\"" + $(object).val() + "\",";
                             value_added = true;
                         }
