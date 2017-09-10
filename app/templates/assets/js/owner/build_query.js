@@ -168,7 +168,7 @@ function serializeFormToJSON() {
                         if ($(object).val() != "") {
                             if(!property_name_wrote) {
                                 json = json + "{\"name\": \"" + propertyName + "\", \"values\": [";
-                                value_added = true;
+                                property_name_wrote = true;
                             }
                             json = json + "\"" + $(object).val() + "\",";
                             value_added = true;
