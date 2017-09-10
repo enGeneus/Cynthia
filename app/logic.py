@@ -96,11 +96,11 @@ def transform_entry(entry):
 
 
 def get_node_labels():
-    query = "MATCH (n) RETURN distinct labels(n) as label"
+    query = "MATCH (n:Node_info) RETURN n.name "
     result = query_db(query)
     label_list = []
     for record in result:
-        label_list.append(record["label"][0])
+        label_list.append(record["n.name"])
     return label_list
 
 
