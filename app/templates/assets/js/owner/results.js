@@ -124,7 +124,7 @@ function buildResultGraph(data) {
                 demoNodes.push({
                     data: {
                         id:ens_code,
-                        name:ens_code,
+                        name:thistargetname,
                         nodetype:"target",
                         species:species,
                         ens_code:ens_code,
@@ -200,4 +200,47 @@ function buildResultGraph(data) {
             cy.elements().removeClass('faded');
         }
     });
+   
+   
+demoNodesAddedName=new Array();
+for(i=0; i<demoNodes.length; i++) {
+
+	isPresent=false;
+	for(j=0; j<demoNodesAddedName.length; j++)
+		if(demoNodes[i].data.id == demoNodesAddedName[j]) {
+			isPresent=true;
+			break;//already added   
+		}
+	
+	if(isPresent==true)
+		continue;
+
+	if(demoNodes[i].data.nodetype=="node")
+		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
+	else
+		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
+
+	demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
+   
+	cy.$('#'+demoNodes[i].data.id).qtip({
+  		content: thiscontent,
+  		position: {
+    		my: 'top center',
+    		at: 'bottom center'
+  		},
+  		style: {
+    		classes: 'qtip-bootstrap',
+    		tip: {
+      		width: 16,
+      		height: 8
+    		}
+  		}
+	});  
+}  
+
+
+
+
+    
+    
 }
