@@ -21,6 +21,14 @@ var filterEntities = (function(entityType) {
 	
 	}
 	else if(entityType == "best_score") {//if multiple relations between nodes and target, show only the best score relation
+
+		//reboot the nodes in graph before filtering	
+		var collection = cyd.elements("node[weight > 0]");
+		cyd.remove( collection );
+		
+		cyd.add(demoNodes);
+		cyd.add(demoEdges);
+			
 	
 		for(i=0; i<demoNodes.length; i++) {
 		
@@ -64,6 +72,58 @@ var filterEntities = (function(entityType) {
 		layout.run();
 	
 	}
+	else if(entityType == "worst_score") {//if multiple relations between nodes and target, show only the worst score relation
+
+		//reboot the nodes in graph before filtering	
+		var collection = cyd.elements("node[weight > 0]");
+		cyd.remove( collection );
+		
+		cyd.add(demoNodes);
+		cyd.add(demoEdges);
+			
+	
+		for(i=0; i<demoNodes.length; i++) {
+		
+				
+			for(j=0; j<demoNodes.length; j++) {			
+						
+			
+				var edgesSelected=cyd.edges("[source='"+demoNodes[i].data.id+"']");
+				edgesSelected = edgesSelected.edges("[target='"+demoNodes[j].data.id+"']");
+
+				if(edgesSelected.length<=1)
+					continue;			
+			
+				var maximumValue = -99999999;
+				var maximumLabel = "";
+
+				for(k=0; k<edgesSelected.length; k++) {
+					//lower is better (?)
+					if(edgesSelected[k].data().score > maximumValue) {
+						maximumValue = edgesSelected[k].data().score;	
+						maximumLabel = edgesSelected[k].data().label;													
+					}
+				}	
+				
+				var collectionToRemove=cyd.edges("[source='"+demoNodes[i].data.id+"']");
+				collectionToRemove = collectionToRemove.edges("[target='"+demoNodes[j].data.id+"']");
+				cyd.remove( collectionToRemove );
+				
+				var collectionToAdd = cyd.add([{ group: "edges", data: { source: demoNodes[i].data.id, target: demoNodes[j].data.id, score: maximumValue, label: maximumLabel }, classes: "autorotate"  } ]);
+				
+
+							
+			}
+		}	
+		
+		var layout = cyd.layout({
+   			name: 'cola',
+   		   infinite: false,
+    			fit: true
+		});
+		layout.run();
+	
+	}	
 
 
 });
