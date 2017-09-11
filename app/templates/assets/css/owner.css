@@ -53,11 +53,6 @@ div.loader-wrapper {
     text-align: center;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 div.property-value-wrapper .input-wrapper {
     width: 70%;
 }
@@ -87,4 +82,38 @@ a.btn-custom {
     -ms-user-select: none;
     -o-user-select: none;
     user-select: none
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+#import-button {
+    margin-right: 20px;
+}
+
+#import-textarea {
+    resize: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

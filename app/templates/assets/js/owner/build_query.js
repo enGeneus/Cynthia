@@ -257,6 +257,5 @@ function serializeFormToJSON() {
 
     // Close json object
     json = json + "}";
-    alert(json);
     return json
 }
