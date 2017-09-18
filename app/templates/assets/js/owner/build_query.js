@@ -55,11 +55,13 @@ function changeStartingNodeHandler(select) {
         });
     });
     // Enable add property button
-    $(select).parent().parent().find("button").removeClass("disabled");
+    $(select).parent().parent().find("a.add-property-filter").removeClass("disabled");
     // Enable Query button
     $("#submit-query").removeClass("disabled");
     // Enable remove starting node button
-    $(select).parent().parent().parent().find("a").removeClass("disabled");
+    if (startingNodes > 1) {
+        $(select).parent().parent().parent().find("a.remove-node-button").removeClass("disabled");
+    }
 }
 
 function fillSelectOptions(select, options) {
@@ -103,6 +105,7 @@ function removeSelectDisabled() {
 
 function removeFilter(button) {
     $(button).closest(".property-filter").slideUp(function() {
+        $(this).closest(".starting-node-panel").find(".add-property-filter").slideDown();
         $(this).remove();
     });
 }
@@ -148,7 +151,9 @@ function addPropertyFilter(button) {
                 $(button).removeClass("disabled");
                 $("#add-starting-node").removeClass("disabled");
                 $(button).parent().css("top", "0");
-                html_to_add.slideDown();
+                $(button).slideUp(function(){
+                    html_to_add.slideDown();
+                });
             },
             error: function(xhr) {
                 alert("Error " + xhr.status);
@@ -156,7 +161,9 @@ function addPropertyFilter(button) {
         });
     } else {
         fillSelectOptions(html_to_add.find("select"), node_options[node_type]);
-        html_to_add.slideDown();
+        $(button).slideUp(function(){
+            html_to_add.slideDown();
+        });
     }
 }
 
