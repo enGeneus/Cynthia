@@ -42,7 +42,11 @@ def query_page():
 @app.route('/results', methods=['POST'])
 def query_handler():
     form_data = request.form
-    query = logic.build_query(form_data['json'])
+    print(form_data)
+    if 'skip_build' in form_data :
+        query = form_data['query']
+    else:
+        query = logic.build_query(form_data['json'])
     return render_template("results.html", query=query)
 
 
@@ -51,7 +55,6 @@ def executes_query():
     form_data = request.form
     query = form_data['query']
     query_results=logic.query_db(html.unescape(query))
-    #query_results=logic.query_db("match(n:microRNA {name:'mmu-let-7g-3p'})-[r]->(t) RETURN n,r,t LIMIT 25")
     result_json = logic.build_json_from_query_results(query_results)
     return result_json
 
@@ -69,3 +72,9 @@ def error_page():
 def get_node_keys():
     keys = logic.get_node_properties_keys(request.args.get('nodeType'))
     return jsonify(keys)
+
+@app.route('/ajax/import_json', methods=['POST'])
+def import_json():
+    file = request.files['file']
+    text = file.read()
+    return text

@@ -1,0 +1,55 @@
+<div id="import-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Import query</h4>
+            </div>
+            <ul class="nav nav-tabs modal-tab">
+                <li class="active">
+                    <a data-toggle="tab" href="#cypher">From cypher</a>
+                </li>
+                <li><a data-toggle="tab" href="#cynthia">Cynthia data</a></li>
+                <li><a data-toggle="tab" href="#results">Results</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="cypher" class="tab-pane fade in active">
+                    <form method="POST" action="/results" id="uploadQuery">
+                        <div class="modal-body form-group">
+                            <textarea id="uploadQueryInput" name="query" rows="7" class="form-control" placeholder="Paste here the Cypher query"></textarea>
+                        </div>
+                        <input type="hidden" name="skip_build" value="true" />
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-query-import" type="button" class="btn btn-success pull-right disabled" data-dismiss="modal">Submit query&nbsp;<i class="fa fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div id="cynthia" class="tab-pane fade">
+                    <form id="uploadJson" class="upload-form">
+                        <label class="btn btn-info btn-file">
+                            Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadJsonInput" type="file" name="uploaded-file">
+                        </label>
+                        <label id="uploadedJsonFilename" class="uploaded-filename">No file selected</label>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-json-import" type="button" class="btn btn-success pull-right disabled" data-dismiss="modal">Submit query&nbsp;<i class="fa fa-paper-plane"></i></button>
+                    </div>
+                </div>
+                <div id="results" class="tab-pane fade">
+                    <form id="uploadResults" class="upload-form">
+                        <label class="btn btn-info btn-file">
+                            Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadResultsInput" type="file" name="uploaded-file">
+                        </label>
+                        <label id="uploadedResultsFilename" class="uploaded-filename">No file selected</label>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-results-import" type="button" class="btn btn-success pull-right disabled" data-dismiss="modal">Show Results&nbsp;<i class="fa fa-flash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

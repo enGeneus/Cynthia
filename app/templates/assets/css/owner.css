@@ -62,6 +62,22 @@ div.property-value-wrapper {
     margin-bottmo: 5px;
 }
 
+ul.modal-tab {
+    margin-top: 10px;
+}
+
+form.upload-form {
+    margin-top: 15px;
+    margin-left: 20px;
+}
+
+label.uploaded-filename {
+    padding: 10px 40px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    display: inline-block;
+}
+
 a.btn-custom {
     display: inline-block;
     margin-top: 2px;
@@ -109,7 +125,7 @@ a.btn-custom {
     margin-right: 20px;
 }
 
-#import-textarea {
+#uploadQueryInput {
     resize: none;
 }
 

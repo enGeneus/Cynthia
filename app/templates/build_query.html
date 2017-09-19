@@ -39,7 +39,9 @@
             {% endif %}
             <form action="/results" method="post" id="query-form">
                 <div class="row">
-                    <div id="starting-node-container"></div>
+                    <div id="starting-node-container">
+                        <!-- The content of this tag will be dynamically filled by javascript  -->
+                    </div>
                     <div class="col-md-12">
                         <div class="form-group pull-left">
                                 <a id="add-starting-node" class="btn btn-info" onclick="javascript:addStartingNode()"><i class="fa fa-plus"></i>&nbsp;Add starting node</a>
@@ -128,108 +130,8 @@
             </form>
         </section>
 
-        <section id="form_parts" hidden>
-
-            <div id="starting-node_pattern" class="col-md-12 starting-node-panel">
-                <div class="panel panel-default container-fluid">
-                    <div class="panel-heading row">
-                        <div class="panel-title pull-left"><span>Starting node</span></div>
-                        <div class="input-group pull-right">
-                            <a class="btn btn-danger btn-xs remove-node-button remove-node-button disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:removeStartingNode(this)">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <select class="form-control starting-node-select" onchange="javascript:changeStartingNodeHandler(this)" name="startingNode">
-                                <option value="" disabled selected>Select option</option>
-                                {% for label in node_labels %}
-                                <option value="{{label}}">{{label}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="properties-filters"></div>
-                        <div class="pull-left buttons add-property-button">
-                            <div class="button-wrapper">
-                                <a class="btn btn-warning add-property-filter disabled" onclick="javascript:addPropertyFilter(this)">
-                                    <i class="fa fa-plus"></i>&nbsp;Add property
-                                </a>
-                            </div>
-                            <div class="loader-wrapper hidden">
-                                <div class="loader-small"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="filter_pattern" class="col-md-12 property-filter">
-                <div class="panel panel-default container-fluid">
-                    <div class="panel-heading row">
-                        <div class="panel-title pull-left"><span>Property</span></div>
-                        <div class="input-group pull-right">
-                            <a class="btn btn-danger btn-xs" style="padding: 5px 10px;" title="Remove" onclick="javascript:removeFilter(this)">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="panel-body property-panel">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <span>Property Name</span>
-                                <select class="form-control property-select" name="property" onfocus="javascript:savePreviousSelected(this)" onchange="javascript:changePropertyHandler(this)">
-                                    <option value="" disabled selected>Select option</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group property-values">
-                                <span>Property value</span>
-                                <div class="property-value-wrapper row">
-                                    <div class="col-md-8">
-                                        <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <a class="btn btn-info btn-sm disabled" style="padding: 5px 10px;" title="Remove" onclick="javascript:addPropertyField(this)">
-                                <i class="fa fa-plus">&nbsp;Add value</i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="property-value-pattern" class="property-value-wrapper row">
-                <div class="col-md-8">
-                    <input class="form-control input-sm" type="text" name="propertyValue" placeholder="value"/>
-                </div>
-                <a class="btn-custom btn-danger" onclick="javascript:removePropertyField(this)">
-                    <i class="fa fa-times"></i>
-                </a>
-            </div>
-
-        </section>
-
-        <div id="import-modal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Import query</h4>
-                    </div>
-                    <form>
-                        <div class="modal-body form-group">
-                            <textarea id="import-textarea" rows="7" class="form-control" placeholder="Paste here the Cynthia query data"></textarea>
-                        </div>
-                    </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                        <button id="complete-import" type="button" class="btn btn-success pull-right" data-dismiss="modal">Submit query&nbsp;<i class="fa fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'form_components.html' %}
+        {% include 'import_modal.html' %}
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
