@@ -5,6 +5,7 @@ from app import app
 from app import logic
 import neo4j
 import html
+import json
 
 
 @app.route('/assets/<path:path>')
@@ -53,6 +54,10 @@ def executes_query():
     #query_results=logic.query_db("match(n:microRNA {name:'mmu-let-7g-3p'})-[r]->(t) RETURN n,r,t LIMIT 25")
     result_json = logic.build_json_from_query_results(query_results)
     return result_json
+
+@app.route('/get_labels', methods=['POST'])
+def get_labels():
+    return json.dumps(logic.get_name_of_relations_on_relation_general_info())
 
 
 @app.route('/error')

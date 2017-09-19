@@ -91,9 +91,39 @@
         <p>These are your results. Feel free to Filter them and adjust your Results.</p>
 		<p></p>
 		<p>Filter By:</p>
+	 	<div id="filters-ok">
 			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('all');">All Results</span><br>
 			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('best_score');">Max Score</span><br>
 			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('worst_score');">Min Score</span><br> 
+		</div>
+		
+<script>
+
+$.ajax("/get_labels", {
+    method: "POST",
+    data: {
+        "post": "nothing"
+    },
+    success: function(result) {
+
+
+	    	filterNames = JSON.parse(result);    		
+			for(i=0; i<filterNames.length; i++) {
+        		$("#filters-ok").append("<span class=\"label label-info\" style=\"cursor:pointer;\" onclick=\"filterEntities('"+filterNames[i]+"');\">"+filterNames[i]+"</span><br>");
+			}
+    		
+
+    },
+    error: function(xhr) {
+        alert("Error " + xhr.status);
+    }
+
+});
+
+
+
+</script>			
+			
       </div>
 
     </div>

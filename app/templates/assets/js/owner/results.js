@@ -4,13 +4,20 @@ var filterEntities = (function(entityType) {
     var demoEdgesTemp = [];
 	
 
-	if(entityType == "all") {//show all results
-	
-		var collection = cyd.elements("node[weight > 0]");
+		//reboot the nodes in graph before filtering	
+		var collection = cyd.nodes();
 		cyd.remove( collection );
+		
+		//reboot the edges in graph before filtering	
+		var collection = cyd.edges();
+		cyd.remove( collection );		
 		
 		cyd.add(demoNodes);
 		cyd.add(demoEdges);
+
+
+	if(entityType == "all") {//show all results
+
 		
 		var layout = cyd.layout({
    			name: 'cola',
@@ -20,15 +27,7 @@ var filterEntities = (function(entityType) {
 		layout.run();
 	
 	}
-	else if(entityType == "best_score") {//if multiple relations between nodes and target, show only the best score relation
-
-		//reboot the nodes in graph before filtering	
-		var collection = cyd.elements("node[weight > 0]");
-		cyd.remove( collection );
-		
-		cyd.add(demoNodes);
-		cyd.add(demoEdges);
-			
+	else if(entityType == "best_score") {//if multiple relations between nodes and target, show only the best score relation			
 	
 		for(i=0; i<demoNodes.length; i++) {
 		
@@ -72,15 +71,7 @@ var filterEntities = (function(entityType) {
 		layout.run();
 	
 	}
-	else if(entityType == "worst_score") {//if multiple relations between nodes and target, show only the worst score relation
-
-		//reboot the nodes in graph before filtering	
-		var collection = cyd.elements("node[weight > 0]");
-		cyd.remove( collection );
-		
-		cyd.add(demoNodes);
-		cyd.add(demoEdges);
-			
+	else if(entityType == "worst_score") {//if multiple relations between nodes and target, show only the worst score relation			
 	
 		for(i=0; i<demoNodes.length; i++) {
 		
@@ -123,7 +114,80 @@ var filterEntities = (function(entityType) {
 		});
 		layout.run();
 	
-	}	
+	}
+	else {//automatic relation filter
+			
+		
+						
+			
+				var edgesSelected=cyd.edges("[name!='"+entityType+"']");
+				
+				var collectionToRemove=edgesSelected;
+				cyd.remove( collectionToRemove );
+				
+
+
+
+		var layout = cyd.layout({
+   			name: 'cola',
+   		   infinite: false,
+    			fit: true
+		});
+		layout.run();
+	
+	}			
+
+
+
+
+
+
+
+
+//reassign tooltip
+
+demoNodesAddedName=new Array();
+for(i=0; i<demoNodes.length; i++) {
+
+	isPresent=false;
+	for(j=0; j<demoNodesAddedName.length; j++)
+		if(demoNodes[i].data.id == demoNodesAddedName[j]) {
+			isPresent=true;
+			break;//already added   
+		}
+	
+	if(isPresent==true)
+		continue;
+
+	if(demoNodes[i].data.nodetype=="node")
+		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
+	else
+		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
+
+	demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
+   
+	cyd.$('#'+demoNodes[i].data.id).qtip({
+  		content: thiscontent,
+  		position: {
+    		my: 'top center',
+    		at: 'bottom center'
+  		},
+  		style: {
+    		classes: 'qtip-bootstrap',
+    		tip: {
+      		width: 16,
+      		height: 8
+    		}
+  		}
+	});  
+}  
+
+
+
+
+
+
+
 
 
 });
@@ -267,7 +331,8 @@ function buildResultGraph(data) {
                         source: source_microrna,
                         target: source_target,
                         label: thisrelname+' - Score: '+score,
-                        score: score
+                        score: score,
+                        name: thisrelname
                     },
                     classes: 'autorotate'
                 });
