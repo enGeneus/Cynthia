@@ -32,6 +32,9 @@ def query_page():
     except neo4j.exceptions.ServiceUnavailable:
         node_labels = []
         message = {'type': 'error', 'message': 'NO_CONN'}
+#    node_labels = []
+#    message = {'type': 'error', 'message': 'NO_CONN'}
+
     return render_template("build_query.html",
                            node_labels=node_labels,
                            species=species,
@@ -42,7 +45,6 @@ def query_page():
 @app.route('/results', methods=['POST'])
 def query_handler():
     form_data = request.form
-    print(form_data)
     if 'skip_build' in form_data :
         query = form_data['query']
     else:
@@ -52,11 +54,13 @@ def query_handler():
 
 @app.route('/execute_query', methods=['POST'])
 def executes_query():
+    print(request)
     form_data = request.form
     query = form_data['query']
     query_results=logic.query_db(html.unescape(query))
     result_json = logic.build_json_from_query_results(query_results)
     return result_json
+
 
 @app.route('/get_labels', methods=['POST'])
 def get_labels():
@@ -73,8 +77,16 @@ def get_node_keys():
     keys = logic.get_node_properties_keys(request.args.get('nodeType'))
     return jsonify(keys)
 
+
 @app.route('/ajax/import_json', methods=['POST'])
 def import_json():
     file = request.files['file']
     text = file.read()
     return text
+
+
+@app.route('/ajax/export_cypher_query', methods=['POST'])
+def export_cypher():
+    form_data = request.form
+    query = logic.build_query(form_data['json'])
+    return query

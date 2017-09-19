@@ -1,0 +1,36 @@
+<div id="export-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Export</h4>
+            </div>
+            <ul class="nav nav-tabs modal-tab">
+                <li class="active">
+                    <a data-toggle="tab" href="#cypherExport">Cypher Query</a>
+                </li>
+                <li><a data-toggle="tab" href="#cynthiaExport">Cynthia data</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="cypherExport" class="tab-pane fade in active">
+                    <form method="POST" action="/ajax/export_cypher_query" id="downloadQuery">
+                        <div class="modal-body form-group">
+                            <textarea id="downloadQueryInput" name="query" rows="7" class="form-control" placeholder="Generating query..." readonly></textarea>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-query-export" type="button" class="btn btn-success pull-right disabled">Copy to clipboard&nbsp;<i class="fa fa-clipboard"></i></button>
+                    </div>
+                </div>
+                <div id="cynthiaExport" class="tab-pane fade">
+                    <p>Click "Download data" to download query data in Cynthia format</p>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-json-export" type="button" class="btn btn-success pull-right">Download data&nbsp;<i class="fa fa-download"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

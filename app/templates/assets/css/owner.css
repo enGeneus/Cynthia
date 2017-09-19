@@ -121,15 +121,57 @@ a.btn-custom {
     display: block;
 }
 
-#import-button {
-    margin-right: 20px;
+.buttons a {
+    margin-left: 20px;
 }
 
-#uploadQueryInput {
+textarea {
     resize: none;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+#snackbar {
+    z-index:9999;
+    background-color: rgba(60, 60, 60, 0.8);
+    border-radius: 6px;
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    color: #fff;
+    text-align: center;
+    padding: 16px;
+    position: fixed;
+    left: 50%;
+    bottom: 20%;
+    font-size: 17px;
+}
+
+#snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 1.5s;
+    animation: fadein 0.5s, fadeout 0.5s 1.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 10%; opacity: 0;}
+    to {bottom: 20%; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 10%; opacity: 0;}
+    to {bottom: 20%; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 20%; opacity: 1;}
+    to {bottom: 10%; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 20%; opacity: 1;}
+    to {bottom: 10%; opacity: 0;}
 }

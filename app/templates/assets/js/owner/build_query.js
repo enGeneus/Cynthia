@@ -58,6 +58,7 @@ function changeStartingNodeHandler(select) {
     $(select).parent().parent().find("a.add-property-filter").removeClass("disabled");
     // Enable Query button
     $("#submit-query").removeClass("disabled");
+    $("#export-button").removeClass("disabled");
     // Enable remove starting node button
     if (startingNodes > 1) {
         $(select).parent().parent().parent().find("a.remove-node-button").removeClass("disabled");
@@ -118,6 +119,11 @@ function removeStartingNode(button) {
         startingNodes--;
         if (startingNodes == 1) {
             $(".remove-node-button").addClass("disabled");
+            // If the remaining starting node has not been selected, disable export and submit button
+            if ($("#starting-node-container .starting-node-select").val() == null) {
+                $("#submit-query").addClass("disabled");
+                $("#export-button").addClass("disabled");
+            }
         }
     }
 }
