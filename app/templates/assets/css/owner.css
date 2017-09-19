@@ -66,6 +66,11 @@ ul.modal-tab {
     margin-top: 10px;
 }
 
+div.modal-content {
+    margin-top: 15px;
+    margin-left: 20px;
+}
+
 form.upload-form {
     margin-top: 15px;
     margin-left: 20px;

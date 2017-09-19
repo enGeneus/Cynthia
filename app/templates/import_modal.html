@@ -3,11 +3,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Import query</h4>
+                <h4 class="modal-title">Import</h4>
             </div>
             <ul class="nav nav-tabs modal-tab">
                 <li class="active">
-                    <a data-toggle="tab" href="#cypher">From cypher</a>
+                    <a data-toggle="tab" href="#cypher">Cypher Query</a>
                 </li>
                 <li><a data-toggle="tab" href="#cynthia">Cynthia data</a></li>
                 <li><a data-toggle="tab" href="#results">Results</a></li>
@@ -26,23 +26,27 @@
                     </div>
                 </div>
                 <div id="cynthia" class="tab-pane fade">
-                    <form id="uploadJson" class="upload-form">
-                        <label class="btn btn-info btn-file">
-                            Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadJsonInput" type="file" name="uploaded-file">
-                        </label>
-                        <label id="uploadedJsonFilename" class="uploaded-filename">No file selected</label>
-                    </form>
+                    <div class="modal-body">
+                        <form id="uploadJson">
+                            <label class="btn btn-info btn-file">
+                                Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadJsonInput" type="file" name="uploaded-file">
+                            </label>
+                            <label id="uploadedJsonFilename" class="uploaded-filename">No file selected</label>
+                        </form>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
                         <button id="complete-json-import" type="button" class="btn btn-success pull-right disabled" data-dismiss="modal">Submit query&nbsp;<i class="fa fa-paper-plane"></i></button>
                     </div>
                 </div>
                 <div id="results" class="tab-pane fade">
-                    <form id="uploadResults" class="upload-form">
-                        <label class="btn btn-info btn-file">
-                            Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadResultsInput" type="file" name="uploaded-file">
-                        </label>
-                        <label id="uploadedResultsFilename" class="uploaded-filename">No file selected</label>
+                    <form id="uploadResults">
+                        <div class="modal-body">
+                            <label class="btn btn-info btn-file">
+                                Upload&nbsp;<i class="fa fa-upload"></i><input id="uploadResultsInput" type="file" name="uploaded-file">
+                            </label>
+                            <label id="uploadedResultsFilename" class="uploaded-filename">No file selected</label>
+                        </div>
                     </form>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
