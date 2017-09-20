@@ -1,8 +1,41 @@
+$(function(){
+    var query = $("#query").val()
+
+    $.ajax("/execute_query", {
+        method: "POST",
+        data: {
+            "query": query
+        },
+        success: function(result) {
+            buildResultGraph(result);
+            $("#loading-message").hide();
+        },
+        error: function(xhr) {
+            alert("Error " + xhr.status);
+        }
+    });
+
+    $.ajax("/get_labels", {
+        method: "POST",
+        data: {
+            "post": "nothing"
+        },
+        success: function(result) {
+            filterNames = JSON.parse(result);
+            for(i=0; i<filterNames.length; i++) {
+                $("#filters-ok").append("<span class=\"label label-info\" style=\"cursor:pointer;\" onclick=\"filterEntities('"+filterNames[i]+"');\">"+filterNames[i]+"</span><br>");
+            }
+        },
+        error: function(xhr) {
+            alert("Error " + xhr.status);
+        }
+    });
+});
+
 var filterEntities = (function(entityType) {
 	
-	 var demoNodesTemp = [];
+    var demoNodesTemp = [];
     var demoEdgesTemp = [];
-	
 
 		//reboot the nodes in graph before filtering	
 		var collection = cyd.nodes();
@@ -15,26 +48,21 @@ var filterEntities = (function(entityType) {
 		cyd.add(demoNodes);
 		cyd.add(demoEdges);
 
-
 	if(entityType == "all") {//show all results
 
-		
 		var layout = cyd.layout({
    			name: 'cola',
    		   infinite: false,
     			fit: true
 		});
 		layout.run();
-	
 	}
 	else if(entityType == "best_score") {//if multiple relations between nodes and target, show only the best score relation			
 	
 		for(i=0; i<demoNodes.length; i++) {
-		
-				
+
 			for(j=0; j<demoNodes.length; j++) {			
-						
-			
+
 				var edgesSelected=cyd.edges("[source='"+demoNodes[i].data.id+"']");
 				edgesSelected = edgesSelected.edges("[target='"+demoNodes[j].data.id+"']");
 
@@ -57,28 +85,23 @@ var filterEntities = (function(entityType) {
 				cyd.remove( collectionToRemove );
 				
 				var collectionToAdd = cyd.add([{ group: "edges", data: { source: demoNodes[i].data.id, target: demoNodes[j].data.id, score: maximumValue, label: maximumLabel }, classes: "autorotate"  } ]);
-				
 
-							
 			}
 		}	
 		
 		var layout = cyd.layout({
-   			name: 'cola',
-   		   infinite: false,
-    			fit: true
+            name: 'cola',
+            infinite: false,
+            fit: true
 		});
 		layout.run();
-	
-	}
-	else if(entityType == "worst_score") {//if multiple relations between nodes and target, show only the worst score relation			
+
+    } else if(entityType == "worst_score") {//if multiple relations between nodes and target, show only the worst score relation
 	
 		for(i=0; i<demoNodes.length; i++) {
-		
-				
+
 			for(j=0; j<demoNodes.length; j++) {			
-						
-			
+
 				var edgesSelected=cyd.edges("[source='"+demoNodes[i].data.id+"']");
 				edgesSelected = edgesSelected.edges("[target='"+demoNodes[j].data.id+"']");
 
@@ -101,8 +124,6 @@ var filterEntities = (function(entityType) {
 				cyd.remove( collectionToRemove );
 				
 				var collectionToAdd = cyd.add([{ group: "edges", data: { source: demoNodes[i].data.id, target: demoNodes[j].data.id, score: maximumValue, label: maximumLabel }, classes: "autorotate"  } ]);
-				
-
 							
 			}
 		}	
@@ -114,87 +135,64 @@ var filterEntities = (function(entityType) {
 		});
 		layout.run();
 	
-	}
-	else {//automatic relation filter
-			
-		
-						
-			
-				var edgesSelected=cyd.edges("[name!='"+entityType+"']");
-				
-				var collectionToRemove=edgesSelected;
-				cyd.remove( collectionToRemove );
-				
+	} else {//automatic relation filter
 
-
+        var edgesSelected=cyd.edges("[name!='"+entityType+"']");
+				
+        var collectionToRemove=edgesSelected;
+        cyd.remove( collectionToRemove );
 
 		var layout = cyd.layout({
-   			name: 'cola',
-   		   infinite: false,
-    			fit: true
+		    name: 'cola',
+            infinite: false,
+            fit: true
 		});
 		layout.run();
-	
 	}			
 
 
+    //reassign tooltip
 
+    demoNodesAddedName=new Array();
+    for(i=0; i<demoNodes.length; i++) {
 
+        isPresent=false;
+        for(j=0; j<demoNodesAddedName.length; j++)
+            if(demoNodes[i].data.id == demoNodesAddedName[j]) {
+                isPresent=true;
+                break;//already added
+            }
 
+        if(isPresent==true)
+            continue;
 
+        if(demoNodes[i].data.nodetype=="node")
+            thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
+        else
+            thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
 
+        demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
 
-//reassign tooltip
-
-demoNodesAddedName=new Array();
-for(i=0; i<demoNodes.length; i++) {
-
-	isPresent=false;
-	for(j=0; j<demoNodesAddedName.length; j++)
-		if(demoNodes[i].data.id == demoNodesAddedName[j]) {
-			isPresent=true;
-			break;//already added   
-		}
-	
-	if(isPresent==true)
-		continue;
-
-	if(demoNodes[i].data.nodetype=="node")
-		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
-	else
-		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
-
-	demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
-   
-	cyd.$('#'+demoNodes[i].data.id).qtip({
-  		content: thiscontent,
-  		position: {
-    		my: 'top center',
-    		at: 'bottom center'
-  		},
-  		style: {
-    		classes: 'qtip-bootstrap',
-    		tip: {
-      		width: 16,
-      		height: 8
-    		}
-  		}
-	});  
-}  
-
-
-
-
-
-
-
-
-
+        cyd.$('#'+demoNodes[i].data.id).qtip({
+            content: thiscontent,
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                width: 16,
+                height: 8
+                }
+            }
+        });
+    }
 });
 	
-	 var cyd;
-    var demoNodes = [];
-    var demoEdges = [];
+var cyd;
+var demoNodes = [];
+var demoEdges = [];
 
 var decodeEntities = (function() {
     // this prevents any overhead from creating the object each time
@@ -214,23 +212,6 @@ var decodeEntities = (function() {
     return decodeHTMLEntities;
 })();
 
-var query = $("#query").val()
-
-$.ajax("/execute_query", {
-    method: "POST",
-    data: {
-        "query": query
-    },
-    success: function(result) {
-        buildResultGraph(result);
-        $("#loading-message").hide();
-    },
-    error: function(xhr) {
-        alert("Error " + xhr.status);
-    }
-
-});
-
 function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
@@ -242,30 +223,26 @@ function replaceAll(str, find, replace) {
 
 function buildResultGraph(data) {
 
-
-
     $('#config-toggle').on('click', function(){
       $('body').toggleClass('config-closed');
 
       cy.resize();
     });
 
-	 try {
-	    querydata = JSON.parse(decodeEntities(data));
-	 }
-	 catch(noresults) {
-   	         $("#loading-text").text("No results found. ");
-   	         $("#loading-text").append("<a href='javascript:history.back(-1);'>Try Again</a>");
-   	         $("#cy").hide();
-   	         $("#loading-loader").hide();
-	 }     
+    try {
+        querydata = JSON.parse(decodeEntities(data));
+
+    } catch(noresults) {
+         $("#loading-text").text("No results found. ");
+         $("#loading-text").append("<a href='javascript:history.back(-1);'>Try Again</a>");
+         $("#cy").hide();
+         $("#loading-loader").hide();
+    }
     querydata = querydata.data;
     $("#resultData").html(decodeEntities(data));
 
     counter_record=0;
 
-
-	
     var demoNodesNames = new Array();
 
     while(true) {
@@ -276,8 +253,8 @@ function buildResultGraph(data) {
         thisnodename="";
         thisrelname="";
         thistargetname="";
-		  i=0;
-		  
+        i=0;
+
         while(true) {
             result = record["result_"+i];
             if(result == null)
@@ -412,44 +389,39 @@ function buildResultGraph(data) {
         }
     });
 
-   
-demoNodesAddedName=new Array();
-for(i=0; i<demoNodes.length; i++) {
+    demoNodesAddedName=new Array();
+    for(i=0; i<demoNodes.length; i++) {
 
-	isPresent=false;
-	for(j=0; j<demoNodesAddedName.length; j++)
-		if(demoNodes[i].data.id == demoNodesAddedName[j]) {
-			isPresent=true;
-			break;//already added   
-		}
-	
-	if(isPresent==true)
-		continue;
+        isPresent=false;
+        for(j=0; j<demoNodesAddedName.length; j++)
+            if(demoNodes[i].data.id == demoNodesAddedName[j]) {
+                isPresent=true;
+                break;//already added
+            }
 
-	if(demoNodes[i].data.nodetype=="node")
-		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
-	else
-		thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
+        if(isPresent==true)
+            continue;
 
-	demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
-   
-	cyd.$('#'+demoNodes[i].data.id).qtip({
-  		content: thiscontent,
-  		position: {
-    		my: 'top center',
-    		at: 'bottom center'
-  		},
-  		style: {
-    		classes: 'qtip-bootstrap',
-    		tip: {
-      		width: 16,
-      		height: 8
-    		}
-  		}
-	});  
-}  
+        if(demoNodes[i].data.nodetype=="node")
+            thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Accession: '+demoNodes[i].data.accession+'<br>Mirbase Link: '+demoNodes[i].data.mirbase_link+'<br>Species: '+demoNodes[i].data.species;
+        else
+            thiscontent = 'Node Name: '+demoNodes[i].data.name+'<br>Node Type: '+demoNodes[i].data.nodetype+'<br>Gene ID: '+demoNodes[i].data.geneid+'<br>ens_code: '+demoNodes[i].data.ens_code+'<br>Species: '+demoNodes[i].data.species;
 
+        demoNodesAddedName[demoNodesAddedName.length]=demoNodes[i].data.id;
 
-    
-    
+        cyd.$('#'+demoNodes[i].data.id).qtip({
+            content: thiscontent,
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                width: 16,
+                height: 8
+                }
+            }
+        });
+    }
 }

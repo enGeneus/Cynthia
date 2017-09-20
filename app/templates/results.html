@@ -4,7 +4,6 @@
         <meta charset="utf-8">
         <meta name="viewport"    content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
-        <meta name="author" content="lolli" >
 
         <title>Cynthia</title>
 
@@ -20,31 +19,8 @@
         <link rel="stylesheet" href="assets/css/jquery.qtip.min.css">
         <link rel="stylesheet" href="assets/css/graph-bar.css">
 
+        <link href="assets/css/owner.css" rel="stylesheet">
         <link href="assets/css/style-graph.css" rel="stylesheet">
-
-        <style>
-            #loading-message h1 {
-                width: 100%;
-                text-align: center;
-            }
-
-            .loader {
-                border: 16px solid #f3f3f3; /* Light grey */
-                border-top: 16px solid #3498db; /* Blue */
-                border-radius: 50%;
-                width: 160px;
-                height: 160px;
-                animation: spin 2s linear infinite;
-                margin-top: 100px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        </style>
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -53,10 +29,12 @@
         <![endif]-->
     </head>
     <body>
+        <input type="hidden" id="query" name="query" value="{{query}}"/>
+
         <section class="container">
             <div id="loading-message">
-                <h1 id="loading-text">Your results are loading...</h1>
-                <div class="loader" id="loading-loader"></div>
+                <h1>Your results are loading...</h1>
+                <div class="loader-big" id="loading-loader"></div>
             </div>
             <div id="results">
                 <div id="resultData" hidden></div>
@@ -64,7 +42,22 @@
             </div>
         </section>
 
-        <input type="hidden" id="query" name="query" value="{{query}}"/>
+        <span class="fa fa-bars config-toggle" id="config-toggle"></span>
+
+        <div id="config" class="config">
+
+            <div class="preamble">
+                <span class="label"><img src='/assets/images/logo.png'></span>
+                <p>These are your results. Feel free to Filter them and adjust your Results.</p>
+                <p></p>
+                <p>Filter By:</p>
+                <div id="filters-ok">
+                    <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('all');">All Results</span><br>
+                    <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('best_score');">Max Score</span><br>
+                    <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('worst_score');">Min Score</span><br>
+                </div>
+            </div>
+        </div>
 
         <script src="assets/js/jquery/jquery-3.2.1.min.js"></script>
         <script src="assets/js/bootstrap.min.js"></script>
@@ -74,62 +67,11 @@
 
    	 	<script src="assets/js/cola.js"></script>
    	 	<script src="assets/js/cytoscape.min.js"></script>
-   	 	<script src="assets/js/cytoscape-qtip.js"></script>   	 	
+   	 	<script src="assets/js/cytoscape-qtip.js"></script>
    	 	<script src="assets/js/jquery.qtip.min.js"></script>
-    	 	<script src="assets/js/cytoscape-cola.js"></script>  	 	
+    	<script src="assets/js/cytoscape-cola.js"></script>
 
-        <script src="assets/js/owner/build_query.js"></script>
         <script src="assets/js/owner/results.js"></script>
-
-    <span class="fa fa-bars config-toggle" id="config-toggle"></span>
-
-    <div id="config" class="config">
-
-      <div class="preamble">
-        <span class="label"><img src='/assets/images/logo.png'></span>
-
-        <p>These are your results. Feel free to Filter them and adjust your Results.</p>
-		<p></p>
-		<p>Filter By:</p>
-	 	<div id="filters-ok">
-			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('all');">All Results</span><br>
-			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('best_score');">Max Score</span><br>
-			<span class="label label-info" style="cursor:pointer;" onclick="filterEntities('worst_score');">Min Score</span><br> 
-		</div>
-		
-<script>
-
-$.ajax("/get_labels", {
-    method: "POST",
-    data: {
-        "post": "nothing"
-    },
-    success: function(result) {
-
-
-	    	filterNames = JSON.parse(result);    		
-			for(i=0; i<filterNames.length; i++) {
-        		$("#filters-ok").append("<span class=\"label label-info\" style=\"cursor:pointer;\" onclick=\"filterEntities('"+filterNames[i]+"');\">"+filterNames[i]+"</span><br>");
-			}
-    		
-
-    },
-    error: function(xhr) {
-        alert("Error " + xhr.status);
-    }
-
-});
-
-
-
-</script>			
-			
-      </div>
-
-    </div>
-
-
-
 
     </body>
 </html>
