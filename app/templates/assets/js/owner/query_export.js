@@ -18,8 +18,8 @@ $(function() {
     });
 
     $("#complete-query-export").click(function(){
-        var copyTextarea = $("#downloadQueryInput");
-        copyTextarea.select();
+        var inputVal = $("#downloadQueryInput");
+        inputVal.select();
         document.execCommand('copy');
         showMessage("Query copied to clipboard!");
     });

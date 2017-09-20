@@ -1,10 +1,11 @@
 function showMessage(message) {
-    $("#snackbar").html(message);
-    var snackbar = document.getElementById("snackbar")
-    snackbar.innerHtml = message;
+    var snackbar = document.createElement('div')
+    snackbar.id = "snackbar";
+    snackbar.innerHTML = message;
     snackbar.className = "show";
+    document.body.appendChild(snackbar);
     setTimeout(function(){
-        snackbar.className = snackbar.className.replace("show", "");
+        document.body.removeChild(snackbar);
     }, 2000);
 }
 

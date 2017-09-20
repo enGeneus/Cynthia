@@ -1,19 +1,29 @@
 $(function(){
-    var query = $("#query").val()
 
-    $.ajax("/execute_query", {
-        method: "POST",
-        data: {
-            "query": query
-        },
-        success: function(result) {
-            buildResultGraph(result);
-            $("#loading-message").hide();
-        },
-        error: function(xhr) {
-            alert("Error " + xhr.status);
-        }
-    });
+    if ($("#results").val()=="") {
+        // If there are no results filled on page load, call the execute query
+        var query = $("#query").val()
+
+        $.ajax("/execute_query", {
+            method: "POST",
+            data: {
+                "query": query
+            },
+            success: function(result) {
+                $("#results").val(decodeEntities(result));
+                buildResultGraph(result);
+                $("#loading-message").hide();
+            },
+            error: function(xhr) {
+                showMessage("Error while executing query");
+            }
+        });
+    } else {
+        // Else, show results
+        buildResultGraph($("#results").val());
+        $("#loading-message").hide();
+    }
+
 
     $.ajax("/get_labels", {
         method: "POST",
@@ -27,7 +37,7 @@ $(function(){
             }
         },
         error: function(xhr) {
-            alert("Error " + xhr.status);
+            showMessage("Error while acquiring relationship filters");
         }
     });
 });
@@ -225,7 +235,6 @@ function buildResultGraph(data) {
 
     $('#config-toggle').on('click', function(){
       $('body').toggleClass('config-closed');
-
       cy.resize();
     });
 
@@ -239,7 +248,6 @@ function buildResultGraph(data) {
          $("#loading-loader").hide();
     }
     querydata = querydata.data;
-    $("#resultData").html(decodeEntities(data));
 
     counter_record=0;
 

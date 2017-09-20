@@ -180,3 +180,23 @@ textarea {
     from {bottom: 20%; opacity: 1;}
     to {bottom: 10%; opacity: 0;}
 }
+
+span#results-logo {
+    margin-bottom: 20px;
+}
+
+span#results-title {
+    font-size: 16px;
+}
+
+#filters-ok span {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+#config .footer {
+    display: block;
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+}

@@ -45,16 +45,28 @@ def query_page():
 @app.route('/results', methods=['POST'])
 def query_handler():
     form_data = request.form
-    if 'skip_build' in form_data :
+    results = ""
+    cynthia = ""
+    if 'skip_all' in form_data:
+        results = form_data['results']
+        if 'query' not in form_data:
+            if 'cynthia' in form_data:
+                query = logic.build_query(form_data['cynthia'])
+            else:
+                query = ""
+        else:
+            query = form_data['query']
+        cynthia = form_data['cynthia']
+    elif 'skip_build' in form_data :
         query = form_data['query']
     else:
+        cynthia = form_data['json']
         query = logic.build_query(form_data['json'])
-    return render_template("results.html", query=query)
+    return render_template("results.html", query=query, results=results, cynthia=cynthia)
 
 
 @app.route('/execute_query', methods=['POST'])
 def executes_query():
-    print(request)
     form_data = request.form
     query = form_data['query']
     query_results=logic.query_db(html.unescape(query))
@@ -80,7 +92,14 @@ def get_node_keys():
 
 @app.route('/ajax/import_json', methods=['POST'])
 def import_json():
-    file = request.files['file']
+    file = request.files['cynthia_json']
+    text = file.read()
+    return text
+
+
+@app.route('/ajax/import_results', methods=['POST'])
+def import_results():
+    file = request.files['results_json']
     text = file.read()
     return text
 

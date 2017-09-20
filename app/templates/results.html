@@ -29,15 +29,16 @@
         <![endif]-->
     </head>
     <body>
-        <input type="hidden" id="query" name="query" value="{{query}}"/>
+        <input type="hidden" id="query" value="{{query}}"/>
+        <input type="hidden" id="cynthia" value="{{cynthia}}"/>
+        <input type="hidden" id="results" value="{{results}}"/>
 
         <section class="container">
-            <div id="loading-message">
-                <h1>Your results are loading...</h1>
-                <div class="loader-big" id="loading-loader"></div>
-            </div>
-            <div id="results">
-                <div id="resultData" hidden></div>
+            <div class="row">
+                <div id="loading-message">
+                    <h1>Your results are loading...</h1>
+                    <div class="loader-big" id="loading-loader"></div>
+                </div>
                 <div id="cy"></div>
             </div>
         </section>
@@ -45,16 +46,47 @@
         <span class="fa fa-bars config-toggle" id="config-toggle"></span>
 
         <div id="config" class="config">
-
             <div class="preamble">
-                <span class="label"><img src='/assets/images/logo.png'></span>
-                <p>These are your results. Feel free to Filter them and adjust your Results.</p>
+                <span class="label" id="results-logo"><img src='/assets/images/logo.png'></span>
+                <span id="results-title">These are the query results</span>
                 <p></p>
-                <p>Filter By:</p>
+                <span id="filter-title">Filter by:</span>
                 <div id="filters-ok">
                     <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('all');">All Results</span><br>
                     <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('best_score');">Max Score</span><br>
                     <span class="label label-info" style="cursor:pointer;" onclick="filterEntities('worst_score');">Min Score</span><br>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="pull-right">
+                    <div class="dropup">
+                        <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">
+                            <i class="fa fa-cloud-download"></i>&nbsp;Export
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="disabled"><a id="query-export" data-toggle="modal" data-target="#export-modal" href="#">Cypher Query</a></li>
+                            <li class="disabled"><a id="cynthia-export" href="#">Cynthia data</a></li>
+                            <li><a id="results-export" href="#">Results</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="export-modal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Export Cypher query</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="downloadQueryInput" name="query" rows="7" class="form-control" placeholder="Query not available :(" readonly>{{query}}</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                        <button id="complete-query-export" type="button" class="btn btn-success pull-right disabled">Copy to clipboard&nbsp;<i class="fa fa-clipboard"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,7 +103,9 @@
    	 	<script src="assets/js/jquery.qtip.min.js"></script>
     	<script src="assets/js/cytoscape-cola.js"></script>
 
+        <script src="assets/js/owner/utils.js"></script>
         <script src="assets/js/owner/results.js"></script>
+        <script src="assets/js/owner/results_export.js"></script>
 
     </body>
 </html>

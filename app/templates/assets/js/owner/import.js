@@ -32,7 +32,7 @@ $(function() {
         e.preventDefault();
         var url = "/ajax/import_json";
         var formData = new FormData();
-        formData.append('file', $("#uploadJsonInput")[0].files[0], $("#uploadJsonInput").val());
+        formData.append('cynthia_json', $("#uploadJsonInput")[0].files[0], $("#uploadJsonInput").val());
 
         $.ajax(url, {
             method: "POST",
@@ -42,6 +42,36 @@ $(function() {
             dataType: "json",
             success: function(response) {
                 submitQuery(response);
+            },
+            error: function(xhr) {
+                alert("Error " + xhr.status);
+            }
+        })
+    });
+
+    $("#complete-results-import").click(function(e){
+        e.preventDefault();
+        var url = "/ajax/import_results";
+        var formData = new FormData();
+        formData.append('results_json', $("#uploadResultsInput")[0].files[0], $("#uploadResultsInput").val());
+
+        $.ajax(url, {
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function(response) {
+                // Remove file from the input in order to lighten the request
+                $("#uploadResultsInput").remove();
+
+                // Fill the fields of query, cynthia data and results (if available)
+                $("#query-text").val(response['query']);
+                $("#cynthia-text").val(JSON.stringify(response['cynthia']));
+                $("#results-text").val(JSON.stringify(response['results']));
+
+                // submit request
+                $("#uploadResults").submit();
             },
             error: function(xhr) {
                 alert("Error " + xhr.status);
