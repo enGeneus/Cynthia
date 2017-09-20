@@ -187,7 +187,7 @@ def build_query(form_data):
         relation_part = "MATCH (n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")"
 
         if rel_num > 0:
-            relation_part = relation_part + "-[r"+str(i)+ ":PicTar|RNA22]-> (t)"
+            relation_part = relation_part + "-[r"+str(i)+ "]-> (t)"
 
         diz_prop = {}
 
