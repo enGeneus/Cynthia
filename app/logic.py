@@ -149,7 +149,7 @@ def get_node_whit_common_relation(node_type, relation_type, node_name):
 def get_species():
     species = list()
     species.append('mus musculus')
-    species.append('human')
+    #species.append('human')
     return species
 
 
