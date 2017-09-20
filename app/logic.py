@@ -276,3 +276,85 @@ def build_query(form_data):
         query = query + return_part + " LIMIT " + str(j["limit"])
 
     return(query)
+
+
+def build_query_v2(data):
+
+    j = json.loads(data)
+
+    query = ""
+
+    rel_num = 0
+    if j['relations'] != []:
+        rel_num = (len(j['relations']))
+
+    start_node_num = 0
+    if j['startingNodes'] != []:
+        start_node_num = (len(j['startingNodes']))
+
+    for i in range(start_node_num):
+
+        if i == 0:
+            query = query + "MATCH "
+        else:
+            query = query + " MATCH "
+
+        query = query + "p" + str(i) + "=(m" + str(i) + ":" + j['startingNodes'][i]['type'] + ")-["
+
+        for k in range(rel_num):
+            query = query + ":" + j['relations'][k]['relationName'] + "|"
+
+        query = query[0:-1]
+
+        query = query + "]->(t" + str(i) + ":Target)"
+
+    query = query + " WHERE "
+
+    for i in range(start_node_num):
+
+        num_of_value = (len(j["startingNodes"][i]["properties"][0]["values"]))
+
+        query = query + "("
+
+        if num_of_value == 0:
+            query = query[0:-1]
+
+        for k in range(num_of_value):
+
+            if num_of_value == 1:
+                query = query + "m" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = " + \
+                        j['startingNodes'][i]['properties'][0]['values'][k]
+            elif num_of_value > 1:
+                query = query + "m" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = " + \
+                        j['startingNodes'][i]['properties'][0]['values'][k] + " OR "
+
+            if k == num_of_value - 1:
+                query = query[0:-4]
+
+        query = query + ")"
+
+        query = query + " AND "
+
+        if num_of_value == 0:
+            query = query[0:-6]
+
+    if start_node_num > 1:
+
+        for i in range(start_node_num):
+            query = query + "t" + str(i) + ".name="
+
+        query = query[0:-1]
+    else:
+        query = query[0:-4]
+
+    query = query + " RETURN "
+
+    for i in range(start_node_num):
+        query = query + "p" + str(i) + ","
+
+    query = query[0:-1]
+
+    query = query + " LIMIT 25"
+
+    #print(query)
+    return(query)
