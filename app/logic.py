@@ -153,7 +153,7 @@ def get_species():
     return species
 
 
-def build_query(form_data):
+def build_query_old(form_data):
     j = json.loads(form_data)
 
     query = ""
@@ -356,5 +356,120 @@ def build_query_v2(data):
 
     query = query + " LIMIT 25"
 
-    #print(query)
     return(query)
+
+#terza versione della query
+
+def build_query(data):
+
+    j = json.loads(data)
+
+    query = ""
+
+    rel_num = 0
+
+    # aggiorna il numero di relazioni
+    if j['relations'] != []:
+        rel_num = (len(j['relations']))
+
+    start_node_num = 0
+
+    # aggiorna il numero di nodi di partenza (precendete al where)
+    if j['startingNodes'] != []:
+        start_node_num = (len(j['startingNodes']))
+
+    # costruzione della prima parte della query
+    for i in range(start_node_num):
+
+        if i == 0:
+            query = query + "MATCH "
+        else:
+            query = query + " MATCH "
+
+        query = query + "(n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")-[r" + str(i) + "]->(t)"
+
+    # aggiunta delle clausole sui nodi di partenza (se sono presenti)
+    num_of_values = 0
+
+    for i in range(start_node_num):
+        if j['startingNodes'][i]['properties'] != []:
+            num_of_values = num_of_values + len(j['startingNodes'][i]['properties'][0]['values'])
+
+    if num_of_values != 0:
+
+        query = query + " WHERE "
+
+        for i in range(start_node_num):
+
+            num_of_value = (len(j["startingNodes"][i]["properties"][0]["values"]))
+
+            query = query + "("
+
+            if num_of_value == 1:
+                query = query[0:-1]
+
+            for k in range(num_of_value):
+
+                if num_of_value == 1:
+                    query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
+                            j['startingNodes'][i]['properties'][0]['values'][k] + "'"
+                elif num_of_value > 1:
+                    query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
+                            j['startingNodes'][i]['properties'][0]['values'][k] + "' OR "
+
+            if num_of_value > 1 and k == num_of_value - 1:
+                query = query[0:-4]
+
+            query = query + ")"
+
+            if num_of_value == 1:
+                query = query[0:-1]
+
+            query = query + " AND "
+
+            if i == start_node_num - 1:
+                query = query[0:-5]
+
+        # aggiunta delle clausole sulle relazioni (se sono presenti)
+
+        if rel_num > 0:
+
+            query = query + " AND "
+
+            for i in range(start_node_num):
+
+                query = query + "("
+
+                for a in range(rel_num):
+
+                    if j['relations'][a]['cutoffValue'] == "":
+                        query = query + "r" + str(i) + ".name = '" + j['relations'][a]['relationName'] + "'"
+                    else:
+                        query = query + "(r" + str(i) + ".name = '" + j['relations'][a][
+                            'relationName'] + "' AND r" + str(i) + ".score > '" + j['relations'][a][
+                                    'cutoffValue'] + "')"
+
+                    query = query + " OR "
+
+                    if a == rel_num - 1:
+                        query = query[0:-4]
+
+                query = query + ")"
+
+                query = query + " AND "
+
+                if i == start_node_num - 1:
+                    query = query[0:-4]
+
+        query = query + "RETURN "
+
+        for i in range(start_node_num):
+            query = query + "n" + str(i) + ","
+
+        for i in range(start_node_num):
+            query = query + "r" + str(i) + ","
+
+        query = query + "t"
+
+    #print(query)
+    return (query)
