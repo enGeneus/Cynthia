@@ -361,7 +361,6 @@ def build_query_v2(data):
 #terza versione della query
 
 def build_query(data):
-
     j = json.loads(data)
 
     query = ""
@@ -395,46 +394,54 @@ def build_query(data):
         if j['startingNodes'][i]['properties'] != []:
             num_of_values = num_of_values + len(j['startingNodes'][i]['properties'][0]['values'])
 
-    if num_of_values != 0:
+    if num_of_values != 0 or rel_num != 0:
 
         query = query + " WHERE "
 
-        for i in range(start_node_num):
+        if num_of_values != 0:
+            for i in range(start_node_num):
 
-            num_of_value = (len(j["startingNodes"][i]["properties"][0]["values"]))
+                if j['startingNodes'][i]['properties'] != []:
+                    num_of_value = (len(j["startingNodes"][i]["properties"][0]["values"]))
+                else:
+                    num_of_value = 0
 
-            query = query + "("
-
-            if num_of_value == 1:
-                query = query[0:-1]
-
-            for k in range(num_of_value):
+                if num_of_value != 0:
+                    query = query + "("
 
                 if num_of_value == 1:
-                    query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
-                            j['startingNodes'][i]['properties'][0]['values'][k] + "'"
-                elif num_of_value > 1:
-                    query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
-                            j['startingNodes'][i]['properties'][0]['values'][k] + "' OR "
+                    query = query[0:-1]
 
-            if num_of_value > 1 and k == num_of_value - 1:
-                query = query[0:-4]
+                for k in range(num_of_value):
 
-            query = query + ")"
+                    if num_of_value == 1:
+                        query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
+                                j['startingNodes'][i]['properties'][0]['values'][k] + "'"
+                    elif num_of_value > 1:
+                        query = query + "n" + str(i) + "." + j['startingNodes'][i]['properties'][0]['name'] + " = '" + \
+                                j['startingNodes'][i]['properties'][0]['values'][k] + "' OR "
 
-            if num_of_value == 1:
-                query = query[0:-1]
+                if num_of_value > 1 and k == num_of_value - 1:
+                    query = query[0:-4]
 
-            query = query + " AND "
+                if num_of_value != 0:
+                    query = query + ")"
 
-            if i == start_node_num - 1:
-                query = query[0:-5]
+                if num_of_value == 1:
+                    query = query[0:-1]
+
+                if num_of_value != 0:
+                    query = query + " AND "
+
+                if i == start_node_num - 1:
+                    query = query[0:-5]
 
         # aggiunta delle clausole sulle relazioni (se sono presenti)
 
         if rel_num > 0:
 
-            query = query + " AND "
+            if num_of_values != 0:
+                query = query + " AND "
 
             for i in range(start_node_num):
 
@@ -461,15 +468,19 @@ def build_query(data):
                 if i == start_node_num - 1:
                     query = query[0:-4]
 
+    if num_of_values != 0 and rel_num > 0:
         query = query + "RETURN "
+    else:
+        query = query + " RETURN "
 
-        for i in range(start_node_num):
-            query = query + "n" + str(i) + ","
+    for i in range(start_node_num):
+        query = query + "n" + str(i) + ","
 
+    if rel_num > 0:
         for i in range(start_node_num):
             query = query + "r" + str(i) + ","
-
+    if start_node_num > 0:
         query = query + "t"
 
-    #print(query)
+    # print(query)
     return (query)
