@@ -385,7 +385,10 @@ def build_query(data):
         else:
             query = query + " MATCH "
 
-        query = query + "(n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")-[r" + str(i) + "]->(t)"
+        if rel_num > 0:
+            query = query + "(n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")-[r" + str(i) + "]->(t)"
+        else:
+            query = query + "(n" + str(i) + ":" + j['startingNodes'][i]['type'] + ")"
 
     # aggiunta delle clausole sui nodi di partenza (se sono presenti)
     num_of_values = 0
@@ -479,8 +482,10 @@ def build_query(data):
     if rel_num > 0:
         for i in range(start_node_num):
             query = query + "r" + str(i) + ","
-    if start_node_num > 0:
+    if start_node_num > 0 and rel_num > 0:
         query = query + "t"
+    else:
+        query = query[0:-1]
 
     # print(query)
     return (query)
