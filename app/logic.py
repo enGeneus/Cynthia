@@ -487,5 +487,10 @@ def build_query(data):
     else:
         query = query[0:-1]
 
+    if j["limit"] == -1:
+        query = query + " LIMIT 25"
+    elif j["limit"] != 0:
+        query = query + " LIMIT " + str(j["limit"])
+
     # print(query)
     return (query)
