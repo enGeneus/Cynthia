@@ -204,6 +204,11 @@ var cyd;
 var demoNodes = [];
 var demoEdges = [];
 
+var temponodes=[];
+var noedges=0;
+
+var tempoedges = [];
+
 var decodeEntities = (function() {
     // this prevents any overhead from creating the object each time
     var element = document.createElement('div');
@@ -241,6 +246,7 @@ function buildResultGraph(data) {
     try {
         querydata = JSON.parse(decodeEntities(data));
 
+
     } catch(noresults) {
          $("#loading-text").text("No results found. ");
          $("#loading-text").append("<a href='javascript:history.back(-1);'>Try Again</a>");
@@ -252,7 +258,15 @@ function buildResultGraph(data) {
     counter_record=0;
 
     var demoNodesNames = new Array();
+    var nodes = [];
+	 var edges = [];
+	 var target= [];
 
+	 j=0;
+	 
+
+
+	 //before starting, i have to make uniques data about nodes and edges
     while(true) {
         record = querydata["record_"+counter_record];
         if(record==null) {
@@ -278,22 +292,10 @@ function buildResultGraph(data) {
                 accession = properties.accession;
                 mirbase_link = properties.mirbase_link;
 
-					isPresent=false;
-					for(j=0; j<demoNodesNames.length; j++)
-						if(thisnodename == demoNodesNames[j]) {
-							isPresent=true;
-							break;//already added   
-						}
-					if(isPresent==true) {
-						i++;
-						continue;					
-					}
-	
-					demoNodesNames[demoNodesNames.length]=thisnodename;	
-	
-                demoNodes.push({
+                nodes.push({
                     data: {
-                        id: thisnodename,
+                        id: "a"+j,
+                        counterId:counter_record,
                         name:thisnodename,
                         nodetype:"node",
                         accession:accession,
@@ -301,7 +303,16 @@ function buildResultGraph(data) {
                         species:species,
                         weight:50,
                         faveColor: "#68BDF6",
-                        faveShape: "ellipse"
+                        faveShape: "ellipse",
+                        unified:0
+                    }
+                });
+			
+               temponodes.push({
+                    data: {
+                        id: "a"+j,
+                        counterId:counter_record,
+                        name:thisnodename,
                     }
                 });
 
@@ -311,9 +322,14 @@ function buildResultGraph(data) {
                 source_microrna = replaceAll(properties.source_microrna, '_', '-');
                 thisrelname = properties.name;
                 source_target = replaceAll(properties.source_target, '_', '-');
+                
+                newsource = temponodes[noedges].data.id;
+                
                 demoEdges.push({
                     data: {
-                        source: source_microrna,
+                    		id:"b"+j,
+                    		counterId:counter_record,
+                        source: newsource,
                         target: source_target,
                         label: thisrelname+' - Score: '+score,
                         score: score,
@@ -321,15 +337,37 @@ function buildResultGraph(data) {
                     },
                     classes: 'autorotate'
                 });
+                
+               tempoedges.push({
+                    data: {
+                        id: "b"+j,
+                        counterId:counter_record,
+                        name:thisrelname
+                    }
+                });                
+                
+                noedges++;
             }
             else if(result_type == "t") {//is a target
+            
+
+					//associo ogni relazione al target
+					for(s=0; s<tempoedges.length; s++) {
+						for(l=0; l<demoEdges.length; l++) {
+							if(demoEdges[l].data.id == tempoedges[s].data.id)							
+							demoEdges[l].data.target = "c"+j;					
+					
+						}
+					}
+            
                 geneid = properties.geneid;
                 species = properties.species;
                 ens_code = properties.ens_code;
                 thistargetname = properties.name;
-                demoNodes.push({
+                nodes.push({
                     data: {
-                        id:ens_code,
+                        id:"c"+j,
+                        counterId:counter_record,
                         name:thistargetname,
                         nodetype:"target",
                         species:species,
@@ -337,14 +375,108 @@ function buildResultGraph(data) {
                         geneid: geneid,
                         weight:50,
                         faveColor: "#6DCE9E",
-                        faveShape: "ellipse"
+                        faveShape: "ellipse",
+                        unified:0
                     }
                 });
+                
+                	tempoedges=[];
+              		temponodes=[];  
+              		noedges=0;            
             }
             i++;
+            j++;
         }
         counter_record++;
     }   
+
+
+//unificate demoNodes with same name (source and target), changing the id on the relative demoEdges
+
+//source unification
+for(i=0; i<nodes.length; i++) {
+	if(nodes[i].data.nodetype != "node")
+		continue;
+		
+	if(nodes[i].data.unified==1)
+		continue;
+
+	for(ff=0; ff<nodes.length; ff++)
+		if(nodes[ff].data.nodetype == "node")
+			if(nodes[ff].data.name == nodes[i].data.name)
+				nodes[ff].data.unified=1;		
+			
+			thisindex=demoNodes.length;
+
+            demoNodes.push({
+                data:
+                 nodes[i].data
+            });
+				
+				
+	for(j=0; j<nodes.length; j++) {
+	if(i!=j) {
+		if(demoNodes[thisindex].data.name == nodes[j].data.name) {
+			//i should put all the relative relations to him		
+			for(k=0; k<demoEdges.length; k++) {
+				if(demoEdges[k].data.source == nodes[j].data.id) {
+					demoEdges[k].data.source = demoNodes[thisindex].data.id;				
+				}			
+			}
+		}
+		}
+	
+	
+	}
+
+
+}
+
+
+
+//target unification
+
+for(i=0; i<nodes.length; i++) {
+	if(nodes[i].data.nodetype != "target")
+		continue;
+		
+	if(nodes[i].data.unified==1)
+		continue;
+		
+	for(ff=0; ff<nodes.length; ff++)
+		if(nodes[ff].data.nodetype == "target")
+			if(nodes[ff].data.name == nodes[i].data.name)
+				nodes[ff].data.unified=1;	
+			
+			thisindex=demoNodes.length;
+
+            demoNodes.push({
+                data:
+                 nodes[i].data
+            });
+				
+				
+	for(j=0; j<nodes.length; j++) {
+	if(i!=j) {
+		if(demoNodes[thisindex].data.name == nodes[j].data.name) {
+			//i should put all the relative relations to him		
+			for(k=0; k<demoEdges.length; k++) {
+				if(demoEdges[k].data.target == nodes[j].data.id) {
+					demoEdges[k].data.target = demoNodes[thisindex].data.id;				
+				}			
+			}
+		}		
+		}
+	
+	
+	}
+
+
+}
+
+
+
+
 
     cyd = cytoscape({
         container: document.querySelector('#cy'),
