@@ -60,13 +60,14 @@
             <div class="footer">
                 <div class="pull-right">
                     <div class="dropup">
-                        <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">
+                        <button id="export-button" class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">
                             <i class="fa fa-cloud-download"></i>&nbsp;Export
                         </button>
                         <ul class="dropdown-menu">
                             <li class="disabled"><a id="query-export" data-toggle="modal" data-target="#export-modal" href="#">Cypher Query</a></li>
                             <li class="disabled"><a id="cynthia-export" href="#">Cynthia data</a></li>
-                            <li><a id="results-export" href="#">Results</a></li>
+                            <li class="disabled"><a id="csv-export" href="#">CSV file</a></li>
+                            <li class="disabled"><a id="results-export" href="#">Results</a></li>
                         </ul>
                     </div>
                 </div>
