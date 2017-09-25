@@ -1,0 +1,15 @@
+{
+	"startingNodeType": "microRNA",
+	"species": "mus musculus",
+	"relations": [{
+		"relationName": "RNA22",
+		"cutoff": 15
+	}, {
+		"relationName": "PicTar",
+		"cutoff": 10
+	}],
+	"properties": [{
+		"propertyName": "name",
+		"values": ["mmu-let-7g-3p"]
+	}]
+}
