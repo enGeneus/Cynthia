@@ -4,7 +4,6 @@ from flask import render_template, send_from_directory, request, jsonify
 from app import app
 from app import logic
 import neo4j
-import html
 import json
 
 
@@ -21,7 +20,6 @@ def index_page():
 
 @app.route('/build_query')
 def query_page():
-    node_labels = []
     species = []
     relations = []
     try:
@@ -32,8 +30,6 @@ def query_page():
     except neo4j.exceptions.ServiceUnavailable:
         node_labels = []
         message = {'type': 'error', 'message': 'NO_CONN'}
-#    node_labels = []
-#    message = {'type': 'error', 'message': 'NO_CONN'}
 
     return render_template("build_query.html",
                            node_labels=node_labels,
@@ -69,19 +65,13 @@ def query_handler():
 def executes_query():
     form_data = request.form
     query = form_data['query']
-    query_results=logic.query_db(html.unescape(query))
-    result_json = logic.build_json_from_query_results(query_results)
+    result_json = logic.get_query_results(query)
     return result_json
 
 
 @app.route('/get_labels', methods=['POST'])
 def get_labels():
     return json.dumps(logic.get_name_of_relations_on_relation_general_info())
-
-
-@app.route('/error')
-def error_page():
-    return render_template("error.html")
 
 
 @app.route('/ajax/node_properties')

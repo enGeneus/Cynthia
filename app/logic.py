@@ -3,6 +3,7 @@
 from neo4j.v1 import GraphDatabase, basic_auth
 import config
 import json
+import html
 
 
 def query_db(query):
@@ -13,6 +14,11 @@ def query_db(query):
     session.close()
     return result
 
+
+def get_query_results(query):
+    query_results = query_db(html.unescape(query))
+    result_json = build_json_from_query_results(query_results)
+    return result_json
 
 
 def build_json_from_query_results(query_results):
@@ -58,41 +64,32 @@ def build_json_from_query_results(query_results):
     return emptystr[0:-1].replace("'", '"')
     
 
-
-
 def transform_entry(entry):
-  """
-  Turn the given neo4j Node into a dictionary based on the Node's type.
-  The raw neo4j Node doesn't serialize to JSON so this converts it into
-  something that will.
-  @param entry:       the neo4j Node to transform.
-  """
 
-  # This transform is used for just nodes as well so first check to see if there is a relation
-  if 'relation' not in entry:
-    node = entry
-    relation = {'weight':1}
-  elif entry['relation'] is None:
-    node = entry['node']
-    relation = {'weight':1}
-  else:
-    node = entry['node']
-    relation = entry['relation']
+    # This transform is used for just nodes as well so first check to see if there is a relation
+    if 'relation' not in entry:
+        node = entry
+        relation = {'weight':1}
+    elif entry['relation'] is None:
+        node = entry['node']
+        relation = {'weight':1}
+    else:
+        node = entry['node']
+        relation = entry['relation']
 
-  # Skip anything that isn't a dict or doesn't have an ntype property (bookmarks are skipped here)
-  if type(node) is not dict or 'ntype' not in node:
-    return None
-
-  if node['ntype'] == 'user':
-    return {'user':{'name':node['name'],'user_id':node['userId'], 'weight':relation['weight']}}
-  elif node['ntype'] == 'a':
-    return {'answer':{'post_id':node['postId'], 'favorite_count':node['favoriteCount'], 'score':node['score'], 'weight':relation['weight']}}
-  elif node['ntype'] == 'q':
-    return {'question':{'post_id':node['postId'], 'favorite_count':node['favoriteCount'], 'score':node['score'], 'weight':relation['weight']}}
-  elif node['ntype'] == 'tag':
-    return {'tag':{'name':node['tagName'], 'weight':relation['weight']}}
-  else:
-    return None
+    # Skip anything that isn't a dict or doesn't have an ntype property (bookmarks are skipped here)
+    if type(node) is not dict or 'ntype' not in node:
+        return None
+    if node['ntype'] == 'user':
+        return {'user': {'name': node['name'], 'user_id': node['userId'], 'weight': relation['weight']}}
+    elif node['ntype'] == 'a':
+        return {'answer': {'post_id': node['postId'], 'favorite_count': node['favoriteCount'], 'score': node['score'], 'weight': relation['weight']}}
+    elif node['ntype'] == 'q':
+        return {'question': {'post_id': node['postId'], 'favorite_count': node['favoriteCount'], 'score': node['score'], 'weight': relation['weight']}}
+    elif node['ntype'] == 'tag':
+        return {'tag': {'name': node['tagName'], 'weight': relation['weight']}}
+    else:
+        return None
 
 
 def get_node_labels():
@@ -149,7 +146,6 @@ def get_node_whit_common_relation(node_type, relation_type, node_name):
 def get_species():
     species = list()
     species.append('mus musculus')
-    #species.append('human')
     return species
 
 
@@ -255,8 +251,6 @@ def build_query_old(form_data):
 
         query = query + relation_part + where_part
 
-
-
         return_part = return_part + "n" + str(i)+","
 
         if rel_num > 0 :
@@ -275,7 +269,7 @@ def build_query_old(form_data):
     else:
         query = query + return_part + " LIMIT " + str(j["limit"])
 
-    return(query)
+    return query
 
 
 def build_query_v2(data):
@@ -358,7 +352,6 @@ def build_query_v2(data):
 
     return(query)
 
-#terza versione della query
 
 def build_query(data):
     j = json.loads(data)
@@ -492,5 +485,4 @@ def build_query(data):
     elif j["limit"] != 0:
         query = query + " LIMIT " + str(j["limit"])
 
-    # print(query)
-    return (query)
+    return query
