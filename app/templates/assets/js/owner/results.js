@@ -25,7 +25,7 @@ $(function(){
     }
 
 
-    $.ajax("/get_labels", {
+    $.ajax("/ajax/get_relation_labels", {
         method: "POST",
         data: {
             "post": "nothing"

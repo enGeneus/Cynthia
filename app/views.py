@@ -62,15 +62,15 @@ def query_handler():
 
 
 @app.route('/execute_query', methods=['POST'])
-def executes_query():
+def execute_query():
     form_data = request.form
     query = form_data['query']
     result_json = logic.get_query_results(query)
     return result_json
 
 
-@app.route('/get_labels', methods=['POST'])
-def get_labels():
+@app.route('/ajax/get_relation_labels', methods=['POST'])
+def get_relation_labels():
     return json.dumps(logic.get_name_of_relations_on_relation_general_info())
 
 
